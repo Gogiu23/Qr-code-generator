@@ -38,6 +38,7 @@ export default function Button({
 const baseStyle = {
   padding: "13px",
   borderRadius: "10px",
+  cursor: "pointer",
 };
 const variantStyle = {
   dark: {

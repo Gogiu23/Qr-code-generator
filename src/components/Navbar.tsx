@@ -14,9 +14,7 @@ export default function Navbar() {
         alt="image logo"
         priority
       />
-      <Button className="text-black rounded-lg p-2 cursor-pointer">
-        <FaWindowClose className={styles.iconButt} />
-      </Button>
+      <Image src="/images/title.png" alt="title" width={200} height={200} />
     </nav>
   );
 }
