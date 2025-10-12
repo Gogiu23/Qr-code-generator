@@ -1,0 +1,21 @@
+.nav {
+  display: flex;
+  padding: 0 20px 0 20px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  border-bottom: 4px solid;
+  /* This is the correct way to use a gradient on a border */
+  border-image: linear-gradient(to right, var(--yellow) 30%, var(--red) 80%);
+  border-image-slice: 1; /* This is essential for the gradient to show up */
+}
+.iconButt {
+  color: var(--red);
+  font-size: 2rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.iconButt:hover {
+  transform: scale(1.2);
+}
