@@ -10,6 +10,26 @@ const robotoSans = Roboto({
 export const metadata: Metadata = {
   title: "Qr Generator",
   description: "Generate Qr fast as blast",
+  openGraph: {
+    siteName: "Quode",
+    images: [
+      {
+        url: "https://opengraph.b-cdn.net/production/images/ac6060b2-d301-4f0f-9c97-3ef27dcbd991.png?token=CZNmjDOVVzx5mdK5MmjiotayEyDQTmOs6a6-fA9fn5Y&height=1024&width=1024&expires=33296550843",
+        width: 200,
+        height: 200,
+      },
+    ],
+    locale: "en_EN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Qr Generator",
+    description: "Generate Qr fast as blast",
+    images: [
+      "https://opengraph.b-cdn.net/production/images/ac6060b2-d301-4f0f-9c97-3ef27dcbd991.png?token=CZNmjDOVVzx5mdK5MmjiotayEyDQTmOs6a6-fA9fn5Y&height=1024&width=1024&expires=33296550843",
+    ],
+  },
 };
 
 export default function RootLayout({
