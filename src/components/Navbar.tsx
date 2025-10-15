@@ -8,9 +8,9 @@ export default function Navbar() {
   return (
     <nav className={`${styles.nav}`}>
       <Image
-        src="/images/Logo.png"
-        width={100}
-        height={100}
+        src="/images/LogoNoWords.png"
+        width={200}
+        height={200}
         alt="image logo"
         priority
       />

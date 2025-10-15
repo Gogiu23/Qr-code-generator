@@ -3,6 +3,7 @@ import Image from "next/image";
 import styles from "./Form.module.css";
 import { Tab } from "../Main";
 import { CSSProperties } from "react";
+import dotStyle from "./Dots.module.css";
 
 interface ViewStyles {
   open: CSSProperties;
@@ -12,6 +13,7 @@ interface ViewStyles {
   divImage: CSSProperties;
   divOpen: CSSProperties;
   divClose: CSSProperties;
+  inputColor: CSSProperties;
 }
 
 interface DataProps {
@@ -42,12 +44,41 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
       <div
         className={styles.content}
         style={activeTab === tab ? view.open : view.close}
-      ></div>
+      >
+        <fieldset className={dotStyle.fieldsets}>
+          <legend>Dots shape</legend>
+          <select name="type" id="type id">
+            <option value="1">Rounded</option>
+            <option value="1">Dots</option>
+            <option value="1">Classy</option>
+            <option value="1">Classy-rounded</option>
+            <option value="1">Square</option>
+            <option value="1">Extra rounded</option>
+          </select>
+        </fieldset>
+        <fieldset className={dotStyle.fieldsets}>
+          <legend>Color Dots</legend>
+          <div className={dotStyle.divColors}>
+            <p>Linear</p>
+            <div className={dotStyle.button}>
+              <p style={{ color: "white" }}>I</p>
+              <div className={dotStyle.buttonSlack}></div>
+              <p style={{ color: "white" }}>O</p>
+            </div>
+            <p>Gradient</p>
+          </div>
+        </fieldset>
+      </div>
     </div>
   );
 }
 
 const view: ViewStyles = {
+  inputColor: {
+    width: "40px",
+    border: "4px solid var(--yellow)",
+    borderRadius: "10px",
+  },
   open: {
     position: "absolute",
     top: "0%",
