@@ -2,6 +2,17 @@
 import Image from "next/image";
 import styles from "./Form.module.css";
 import { Tab } from "../Main";
+import { CSSProperties } from "react";
+
+interface ViewStyles {
+  open: CSSProperties;
+  close: CSSProperties;
+  rotateImage: CSSProperties;
+  defectImage: CSSProperties;
+  divImage: CSSProperties;
+  divOpen: CSSProperties;
+  divClose: CSSProperties;
+}
 
 interface DataProps {
   tab: Tab;
@@ -14,9 +25,11 @@ export default function Background({ tab, activeTab, open }: DataProps) {
     <div
       id={tab}
       className={styles.bookDiv}
-      style={activeTab === tab ? view.open : view.close}
+      style={activeTab === tab ? view.divOpen : view.divClose}
     >
-      <div className={styles.bookTitle}>
+      <div className={styles.bookTitle} onClick={() => open(tab)}>
+        <div className={styles.divImage} style={view.divImage}></div>
+        <div className={styles.divBackground}></div>
         {tab}
         <Image
           src="/images/bookRemind.png"
@@ -24,32 +37,29 @@ export default function Background({ tab, activeTab, open }: DataProps) {
           width={100}
           height={100}
           style={activeTab === tab ? view.rotateImage : view.defectImage}
-          onClick={() => open(tab)}
         />
       </div>
       <div
         className={styles.content}
-        style={activeTab === tab ? view.contentOpen : view.contentClose}
+        style={activeTab === tab ? view.open : view.close}
       ></div>
     </div>
   );
 }
 
-const view = {
+const view: ViewStyles = {
   open: {
     position: "absolute",
-    top: "50%",
-    transform: "translateY(-200px)",
+    top: "0%",
     height: "50vh",
     background: "var(--pink)",
+    transform: "translateY(100px)",
     zIndex: "99",
-    border: "3px solid",
-    borderRadius: "10px",
+    opacity: "1",
     transition: "all 0.5s ease-in-out",
   },
   close: {
-    height: "100px",
-    position: "relative",
+    opacity: "0",
     zIndex: "1",
     transition: "all 0.5s ease-in-out",
   },
@@ -61,13 +71,22 @@ const view = {
     transform: "rotate(0deg)",
     transition: "transform 0.5s ease-in-out",
   },
-  contentOpen: {
-    opacity: "1",
-    // border: "2px solid red",
-    transition: "opacity 0.5s ease-in-out",
+  divImage: {
+    backgroundImage: 'url("/images/background.jpg")',
+    backgroundSize: "100%",
+    backgroundOrigin: "border-box",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
   },
-  contentClose: {
-    opacity: "0",
-    transition: "opacity 0.5s ease-in-out",
+  divOpen: {
+    position: "relative",
+    zIndex: "99",
+    transform: "translateY(-317px)",
+    transition: "transform 0.5s ease-in-out",
+  },
+  divClose: {
+    transform: "translateY(0)",
+    transition: "transform 0.5s ease-in-out",
+    zIndex: "1",
   },
 };

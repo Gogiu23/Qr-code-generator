@@ -27,13 +27,16 @@ export default function Main() {
   const [height, setHeight] = useState<number>(200);
   const [margin, setMargin] = useState<number>(10);
   const [activeTab, setActiveTab] = useState<Tab | undefined>(undefined);
+  const [isActive, setIsActive] = useState<boolean>(false);
 
   const openDiv = (Tab: Tab) => {
     setActiveTab(Tab);
     if (activeTab === Tab) {
       setActiveTab(undefined);
+      setIsActive(false);
     } else {
       setActiveTab(Tab);
+      setIsActive(true);
     }
     console.log(Tab);
   };
@@ -48,13 +51,13 @@ export default function Main() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: "space-evenly",
               position: "relative",
               width: "100%",
               height: "100%",
-              // border: "3px solid blue",
             }}
           >
+            <div className={isActive ? styles.backdrop : ""}></div>
             <Data
               tab={Tab.DATA}
               activeTab={activeTab}

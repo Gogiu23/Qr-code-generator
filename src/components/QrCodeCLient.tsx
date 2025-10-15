@@ -1,68 +1,89 @@
 "use client";
-import QRCodeStyling from "qr-code-styling";
-import { Button } from "@material-tailwind/react";
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+import { Button } from "@material-tailwind/react";
+import { CSSProperties } from "react";
+import QRCodeStyling from "qr-code-styling";
 
-interface QrCodeClientProps {
-  url: string;
-  color: string;
-  width: number;
-  height: number;
-  margin: number;
-}
-
-const qrCode = new QRCodeStyling({
-  width: 300,
-  height: 300,
-  image: "",
-  dotsOptions: {
-    color: "#333",
-    type: "rounded",
-  },
-  imageOptions: {
-    crossOrigin: "anonymous",
-    margin: 20,
-  },
-});
-
-export default function QrCodeClient({
+// ✅ Carga dinámica (por si lo importan en otro lado)
+const QrCodeClient = ({
   url,
   color,
   width,
   height,
   margin,
-}: QrCodeClientProps) {
+}: {
+  url: string;
+  color: string;
+  width: number;
+  height: number;
+  margin: number;
+}) => {
   const ref = useRef<HTMLDivElement | null>(null);
+  const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
 
   useEffect(() => {
-    if (ref.current) {
-      qrCode.append(ref.current);
-    }
-    return () => {
+    // Importa qr-code-styling solo en el cliente
+    import("qr-code-styling").then(({ default: QRCodeStyling }) => {
+      const instance = new QRCodeStyling({
+        width: width || 300,
+        height: height || 300,
+        data: url || "",
+        margin: margin || 0,
+        dotsOptions: {
+          color: color || "#333",
+          type: "rounded",
+        },
+        imageOptions: {
+          crossOrigin: "anonymous",
+          margin: 20,
+        },
+      });
+
+      setQrCode(instance);
       if (ref.current) {
         ref.current.innerHTML = "";
+        instance.append(ref.current);
       }
-    };
-  }, []);
-
-  useEffect(() => {
-    qrCode.update({
-      width: width,
-      height: height,
-      data: url,
-      margin: margin,
-      dotsOptions: {
-        color: color,
-      },
     });
-    if (url && url.length > 0) {
-      setStart(false);
-    } else {
-      setStart(true);
+  }, []); // Solo al montar
+
+  // Actualiza cada vez que cambien los props
+  useEffect(() => {
+    if (qrCode) {
+      qrCode.update({
+        width,
+        height,
+        data: url,
+        margin,
+        dotsOptions: { color },
+      });
+      setStart(!(url && url.length > 0));
     }
-  }, [url, color, width, height, margin]);
+  }, [url, color, width, height, margin, qrCode]);
+
+  const style: { boxImage: CSSProperties; download: CSSProperties } = {
+    boxImage: {
+      position: "relative",
+      width: "500px",
+      height: "500px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    download: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "10px",
+      width: "80%",
+      height: "100px",
+      borderRadius: "10px",
+      border: "2px solid blue",
+    },
+  };
 
   return (
     <>
@@ -95,6 +116,7 @@ export default function QrCodeClient({
           />
         )}
       </div>
+
       <div className="download" style={style.download}>
         <Button>Download</Button>
         <select name="format" id="formatDownload">
@@ -105,26 +127,7 @@ export default function QrCodeClient({
       </div>
     </>
   );
-}
-
-const style = {
-  boxImage: {
-    position: "relative",
-    width: "500px",
-    height: "500px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    // border: "2px solid red",
-  },
-  download: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
-    width: "80%",
-    height: "100px",
-    borderRadius: "10px",
-    border: "2px solid blue",
-  },
 };
+
+// ✅ Si importas este componente desde un Server Component:
+export default dynamic(() => Promise.resolve(QrCodeClient), { ssr: false });

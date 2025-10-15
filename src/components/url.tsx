@@ -1,6 +1,12 @@
 "use client";
+import { CSSProperties } from "react";
 import styles from "./url.module.css";
 import { FaSearch } from "react-icons/fa";
+
+interface ViewStyles {
+  mainDiv: CSSProperties;
+  input: CSSProperties;
+}
 
 interface UrlProps {
   setUrl: (url: string) => void;
@@ -85,7 +91,7 @@ export default function Url({
   );
 }
 
-const divRanges = {
+const divRanges: ViewStyles = {
   mainDiv: {
     // border: "2px solid black",
     width: "100%",

@@ -1,41 +1,77 @@
 .bookDiv {
+  position: relative;
   cursor: pointer;
   width: 100%;
   height: 100px;
-  border-bottom: 3px solid;
-  border-image: linear-gradient(
-    to right,
-    var(--background) 30%,
-    var(--yellow) 5%,
-    var(--red) 50%
-  );
-  padding: 0 20px 0 20px;
-  border-image-slice: 1;
   display: flex;
   flex-direction: column;
-  /* border: 2px solid red; */
   justify-content: space-between;
   align-items: center;
-  color: var(--background);
+  color: #fff;
+}
+
+.divImage {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  top: 0;
+  right: 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.divBackground {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  background: linear-gradient(
+    to right,
+    var(--pink) 20%,
+    lightblue 40%,
+    transparent 75%
+  );
 }
 
 .bookTitle {
   width: 100%;
+  z-index: 98;
+  /* border: 2px groove var(--background); */
+  font-size: 1.7rem;
+  font-weight: bold;
   padding-top: 20px;
+  padding-left: 20px;
+  padding-bottom: 10px;
   height: 100px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   /* border: 2px solid red; */
+  transition: all 0.2s ease-in-out;
 }
+
+/* .bookTitle:hover { */
+/*   transform: scale(1.03); */
+/* } */
 
 .content {
   /* border: 2px solid red; */
   display: flex;
   /* border-top: 4px solid white; */
+  color: var(--background);
+  background: var(--pink);
   flex-direction: column;
   justify-content: center;
   align-items: start;
   width: 100%;
   height: 100%;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
