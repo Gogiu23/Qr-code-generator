@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description: "Generate Qr fast as blast",
   openGraph: {
     siteName: "Quode",
+    url: "https://quode.netlify.app",
     images: [
       {
         url: "https://opengraph.b-cdn.net/production/images/ac6060b2-d301-4f0f-9c97-3ef27dcbd991.png?token=CZNmjDOVVzx5mdK5MmjiotayEyDQTmOs6a6-fA9fn5Y&height=1024&width=1024&expires=33296550843",
@@ -30,6 +31,10 @@ export const metadata: Metadata = {
       "https://opengraph.b-cdn.net/production/images/ac6060b2-d301-4f0f-9c97-3ef27dcbd991.png?token=CZNmjDOVVzx5mdK5MmjiotayEyDQTmOs6a6-fA9fn5Y&height=1024&width=1024&expires=33296550843",
     ],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#134686",
 };
 
 export default function RootLayout({
