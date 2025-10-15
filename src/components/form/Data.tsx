@@ -10,9 +10,27 @@ interface DataProps {
   open: (tab: Tab) => void;
   url: string;
   setUrl: (url: string) => void;
+  setWidth: (width: number) => void;
+  setHeight: (height: number) => void;
+  setMargin: (margin: number) => void;
+  width: number;
+  height: number;
+  margin: number;
 }
 
-export default function Data({ tab, activeTab, open, url, setUrl }: DataProps) {
+export default function Data({
+  tab,
+  activeTab,
+  open,
+  url,
+  setUrl,
+  setWidth,
+  setHeight,
+  setMargin,
+  width,
+  height,
+  margin,
+}: DataProps) {
   return (
     <div
       id={tab}
@@ -34,7 +52,16 @@ export default function Data({ tab, activeTab, open, url, setUrl }: DataProps) {
         className={styles.content}
         style={activeTab === tab ? view.contentOpen : view.contentClose}
       >
-        <Url url={url} setUrl={setUrl} />
+        <Url
+          url={url}
+          setUrl={setUrl}
+          setWidth={setWidth}
+          setHeight={setHeight}
+          setMargin={setMargin}
+          width={width}
+          height={height}
+          margin={margin}
+        />
       </div>
     </div>
   );

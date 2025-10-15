@@ -1,10 +1,8 @@
 "use client";
 import styles from "./Main.module.css";
 import QrCodeClient from "./QrCodeCLient";
-import React, { act, useRef, useState } from "react";
-import Url from "./url";
+import React, { useRef, useState } from "react";
 import Color from "./Color";
-import Image from "next/image";
 import Data from "./form/Data";
 import Dots from "./form/Dots";
 import Corner from "./form/Corner";
@@ -25,6 +23,9 @@ export default function Main() {
   const [color, setColor] = useState<string>("#333");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [url, setUrl] = useState<string>("");
+  const [width, setWidth] = useState<number>(200);
+  const [height, setHeight] = useState<number>(200);
+  const [margin, setMargin] = useState<number>(10);
   const [activeTab, setActiveTab] = useState<Tab | undefined>(undefined);
 
   const openDiv = (Tab: Tab) => {
@@ -59,7 +60,13 @@ export default function Main() {
               activeTab={activeTab}
               open={() => openDiv(Tab.DATA)}
               url={url}
+              width={width}
+              height={height}
+              margin={margin}
               setUrl={setUrl}
+              setWidth={setWidth}
+              setHeight={setHeight}
+              setMargin={setMargin}
             />
             <Dots
               tab={Tab.DOTS}
@@ -99,7 +106,13 @@ export default function Main() {
       <div className={styles.preview}>
         <fieldset className={styles.fieldsetPreview}>
           <legend style={view.legend}>Preview</legend>
-          <QrCodeClient url={url} color={color} />
+          <QrCodeClient
+            url={url}
+            color={color}
+            width={width}
+            height={height}
+            margin={margin}
+          />
         </fieldset>
       </div>
     </div>

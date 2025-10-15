@@ -1,0 +1,85 @@
+.divInput {
+  display: flex;
+  padding-left: 10px;
+  /* border: 2px solid red; */
+  border-radius: 20px;
+  background-color: white;
+  width: 100%;
+}
+.icon {
+  vertical-align: middle;
+  align-self: center;
+  justify-self: center;
+  color: lightgray;
+}
+/* resaltar el borde de los objetos que tienen el focus */
+.divInput:focus-within {
+  /* color: var(--yellow); */
+  border: 4px solid var(--yellow);
+}
+
+/* esconder el borde del focus */
+.divInput input:focus::-webkit-input-placeholder {
+  /* Chrome, Safari, Opera */
+  color: transparent;
+  opacity: 0;
+}
+
+.divInput input:focus:-moz-placeholder {
+  /* Firefox < 19 */
+  color: transparent;
+  opacity: 0;
+}
+
+.divInput input:focus::-moz-placeholder {
+  /* Firefox 19+ */
+  color: transparent;
+  opacity: 0;
+}
+
+.divInput input:focus:-ms-input-placeholder {
+  /* IE 10+ */
+  color: transparent;
+  opacity: 0;
+}
+
+.dialog input:focus::placeholder {
+  color: transparent;
+  opacity: 0;
+}
+
+input:focus {
+  outline: none;
+}
+
+/* Quitar estilos nativos */
+.rangeInput {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 2px solid blue;
+}
+/* Web Safari & Edge */
+.rangeInput::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 2px solid red;
+}
+/* Mozilla Firefox */
+.rangeInput::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 2px solid red;
+}
+/* WebKit (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 2px solid green;
+}
+
+/* Mozilla (Firefox) */
+input[type="range"]::-moz-range-track {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 2px solid green;
+}

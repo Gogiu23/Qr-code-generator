@@ -7,6 +7,9 @@ import Image from "next/image";
 interface QrCodeClientProps {
   url: string;
   color: string;
+  width: number;
+  height: number;
+  margin: number;
 }
 
 const qrCode = new QRCodeStyling({
@@ -23,7 +26,13 @@ const qrCode = new QRCodeStyling({
   },
 });
 
-export default function QrCodeClient({ url, color }: QrCodeClientProps) {
+export default function QrCodeClient({
+  url,
+  color,
+  width,
+  height,
+  margin,
+}: QrCodeClientProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [start, setStart] = useState<boolean>(true);
 
@@ -40,7 +49,10 @@ export default function QrCodeClient({ url, color }: QrCodeClientProps) {
 
   useEffect(() => {
     qrCode.update({
+      width: width,
+      height: height,
       data: url,
+      margin: margin,
       dotsOptions: {
         color: color,
       },
@@ -50,11 +62,11 @@ export default function QrCodeClient({ url, color }: QrCodeClientProps) {
     } else {
       setStart(true);
     }
-  }, [url, color]);
+  }, [url, color, width, height, margin]);
 
   return (
     <>
-      <div style={{ position: "relative" }}>
+      <div style={style.boxImage}>
         <div
           ref={ref}
           style={{
@@ -63,15 +75,23 @@ export default function QrCodeClient({ url, color }: QrCodeClientProps) {
             width: "300px",
             height: "300px",
             borderRadius: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         ></div>
         {start && (
           <Image
             width={300}
             height={300}
-            src="/images/ChatGPT Image 10 oct 2025, 13_21_01.png"
+            src="/images/Logo.png"
             alt="placeholder image"
-            style={{ position: "absolute", top: 0, left: 0 }}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
           />
         )}
       </div>
@@ -88,6 +108,15 @@ export default function QrCodeClient({ url, color }: QrCodeClientProps) {
 }
 
 const style = {
+  boxImage: {
+    position: "relative",
+    width: "500px",
+    height: "500px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    // border: "2px solid red",
+  },
   download: {
     display: "flex",
     alignItems: "center",
