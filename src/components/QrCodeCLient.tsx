@@ -4,18 +4,17 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button } from "@material-tailwind/react";
 import { CSSProperties } from "react";
-import QRCodeStyling from "qr-code-styling";
+import QRCodeStyling, { Gradient } from "qr-code-styling";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 // ✅ Carga dinámica (por si lo importan en otro lado)
 const QrCodeClient = ({
   url,
-  color,
   width,
   height,
   margin,
 }: {
   url: string;
-  color: string;
   width: number;
   height: number;
   margin: number;
@@ -23,6 +22,7 @@ const QrCodeClient = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
+  const { hex, gradient } = useGlobalContext();
 
   useEffect(() => {
     // Importa qr-code-styling solo en el cliente
@@ -33,7 +33,7 @@ const QrCodeClient = ({
         data: url || "",
         margin: margin || 0,
         dotsOptions: {
-          color: color || "#333",
+          color: hex.color1 || "#333",
           type: "rounded",
         },
         imageOptions: {
@@ -50,6 +50,24 @@ const QrCodeClient = ({
     });
   }, []); // Solo al montar
 
+  const gradientOptions = gradient.gradient
+    ? {
+        gradient: {
+          type: "linear",
+          colorStops: [
+            {
+              offset: 0,
+              color: hex.color1,
+            },
+            {
+              offset: 1,
+              color: hex.color2,
+            },
+          ],
+        } satisfies Gradient,
+      }
+    : { gradient: undefined };
+
   // Actualiza cada vez que cambien los props
   useEffect(() => {
     if (qrCode) {
@@ -58,11 +76,14 @@ const QrCodeClient = ({
         height,
         data: url,
         margin,
-        dotsOptions: { color },
+        dotsOptions: {
+          color: hex.color1,
+          ...gradientOptions,
+        },
       });
       setStart(!(url && url.length > 0));
     }
-  }, [url, color, width, height, margin, qrCode]);
+  }, [url, hex, width, height, margin, qrCode, gradient]);
 
   const style: { boxImage: CSSProperties; download: CSSProperties } = {
     boxImage: {

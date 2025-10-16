@@ -1,14 +1,20 @@
 "use client";
 import { ReactNode, useContext, useState, createContext } from "react";
 
+//Para objetos
 interface ColorState {
   color1: string;
   color2: string;
 }
+interface ColorBoolean {
+  gradient: boolean;
+}
 
 interface GlobalContextType {
-  color: ColorState;
-  setColor: React.Dispatch<React.SetStateAction<ColorState>>;
+  hex: ColorState;
+  setHex: React.Dispatch<React.SetStateAction<ColorState>>;
+  gradient: ColorBoolean;
+  setGradient: React.Dispatch<React.SetStateAction<ColorBoolean>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -18,14 +24,17 @@ interface GlobalProviderProps {
 }
 
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
-  const [color, setColor] = useState<ColorState>({
+  const [hex, setHex] = useState<ColorState>({
     color1: "",
     color2: "",
   });
+  const [gradient, setGradient] = useState<ColorBoolean>({ gradient: false });
 
   const value = {
-    color,
-    setColor,
+    hex,
+    setHex,
+    gradient,
+    setGradient,
   };
 
   return (

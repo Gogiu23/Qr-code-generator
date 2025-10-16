@@ -20,7 +20,6 @@ export enum Tab {
   QR = "QR",
 }
 export default function Main() {
-  const [color, setColor] = useState<string>("#333");
   const [url, setUrl] = useState<string>("");
   const [width, setWidth] = useState<number>(200);
   const [height, setHeight] = useState<number>(200);
@@ -115,7 +114,6 @@ export default function Main() {
               <legend style={view.legend}>Preview</legend>
               <QrCodeClient
                 url={url}
-                color={color}
                 width={width}
                 height={height}
                 margin={margin}

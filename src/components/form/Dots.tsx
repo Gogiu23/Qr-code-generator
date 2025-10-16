@@ -2,7 +2,7 @@
 import Image from "next/image";
 import styles from "./Form.module.css";
 import { Tab } from "../Main";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useState } from "react";
 import dotStyle from "./Dots.module.css";
 import { useGlobalContext } from "@/context/GlobalContext";
 
@@ -25,44 +25,29 @@ interface DataProps {
 
 export default function Dots({ tab, activeTab, open }: DataProps) {
   const [position, setPosition] = useState<string>("middle");
-  const { color, setColor } = useGlobalContext();
-
-  // comportamiento del button para el gradiente
-  const handleClick = () => {
-    if (position === "middle") {
-      setPosition("left");
-    } else if (position === "left") {
-      setPosition("right");
-    } else setPosition("left");
-    console.log(position);
-  };
+  const { hex, setHex, setGradient } = useGlobalContext();
 
   const handlePick = (
     e: React.ChangeEvent<HTMLInputElement>,
     value: string,
   ) => {
     if (value === "middle") {
-      setColor((prev) => ({
+      setHex((prev) => ({
         ...prev,
         color1: e.target.value,
       }));
     } else if (value === "left") {
-      setColor((prev) => ({
+      setHex((prev) => ({
         ...prev,
         color1: e.target.value,
       }));
     } else {
-      setColor((prev) => ({
+      setHex((prev) => ({
         ...prev,
         color2: e.target.value,
       }));
     }
   };
-
-  // useEffect(() => {
-  //   console.log("Es el color 1", color.color1);
-  //   console.log("este es el color 2: ", color.color2);
-  // }, [color]);
 
   return (
     <div
@@ -106,6 +91,7 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
               <p
                 className={dotStyle.p}
                 onClick={() => {
+                  setGradient({ gradient: false });
                   setPosition("left");
                 }}
               >
@@ -125,6 +111,7 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
               <p
                 className={dotStyle.p}
                 onClick={() => {
+                  setGradient({ gradient: true });
                   setPosition("right");
                 }}
               >
@@ -147,7 +134,7 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
               className={dotStyle.input}
               type="color"
               onChange={(e) => handlePick(e, "middle")}
-              style={{ background: color.color1 }}
+              style={{ background: hex.color1 }}
             />
           ) : (
             <>
@@ -155,13 +142,13 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
                 className={dotStyle.input}
                 type="color"
                 onChange={(e) => handlePick(e, "left")}
-                style={{ background: `${color}` }}
+                style={{ background: hex.color1 }}
               />
               <input
                 className={dotStyle.input}
                 type="color"
                 onChange={(e) => handlePick(e, "right")}
-                style={{ background: `${color}` }}
+                style={{ background: hex.color2 }}
               />
             </>
           )}
