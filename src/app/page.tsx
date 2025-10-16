@@ -3,7 +3,6 @@ import Loading from "./loading";
 import { headers } from "next/headers";
 import Main from "@/components/Main";
 import MainMobile from "@/components/mobile/MainMobile";
-import Navbar from "@/components/Navbar";
 
 function isMobileUA(userAgent: string) {
   return Boolean(
@@ -18,16 +17,13 @@ export default async function Page() {
   const userAgent = headersList.get("user-agent") || "";
   const isMobile = isMobileUA(userAgent);
 
-  return (
+  return isMobile ? (
+    <MainMobile />
+  ) : (
     <Suspense fallback={<Loading />}>
-      {isMobile ? (
-        <MainMobile />
-      ) : (
-        <div>
-          <Navbar />
-          <Main />
-        </div>
-      )}
+      <div>
+        <Main />
+      </div>
     </Suspense>
   );
 }

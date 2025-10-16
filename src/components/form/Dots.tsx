@@ -2,8 +2,9 @@
 import Image from "next/image";
 import styles from "./Form.module.css";
 import { Tab } from "../Main";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import dotStyle from "./Dots.module.css";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 interface ViewStyles {
   open: CSSProperties;
@@ -23,6 +24,46 @@ interface DataProps {
 }
 
 export default function Dots({ tab, activeTab, open }: DataProps) {
+  const [position, setPosition] = useState<string>("middle");
+  const { color, setColor } = useGlobalContext();
+
+  // comportamiento del button para el gradiente
+  const handleClick = () => {
+    if (position === "middle") {
+      setPosition("left");
+    } else if (position === "left") {
+      setPosition("right");
+    } else setPosition("left");
+    console.log(position);
+  };
+
+  const handlePick = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+  ) => {
+    if (value === "middle") {
+      setColor((prev) => ({
+        ...prev,
+        color1: e.target.value,
+      }));
+    } else if (value === "left") {
+      setColor((prev) => ({
+        ...prev,
+        color1: e.target.value,
+      }));
+    } else {
+      setColor((prev) => ({
+        ...prev,
+        color2: e.target.value,
+      }));
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("Es el color 1", color.color1);
+  //   console.log("este es el color 2: ", color.color2);
+  // }, [color]);
+
   return (
     <div
       id={tab}
@@ -39,6 +80,7 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
           width={100}
           height={100}
           style={activeTab === tab ? view.rotateImage : view.defectImage}
+          priority
         />
       </div>
       <div
@@ -46,8 +88,8 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
         style={activeTab === tab ? view.open : view.close}
       >
         <fieldset className={dotStyle.fieldsets}>
-          <legend>Dots shape</legend>
-          <select name="type" id="type id">
+          <legend className={dotStyle.legend}>Dots shape</legend>
+          <select name="type" id="type id" className={dotStyle.select}>
             <option value="1">Rounded</option>
             <option value="1">Dots</option>
             <option value="1">Classy</option>
@@ -57,16 +99,72 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
           </select>
         </fieldset>
         <fieldset className={dotStyle.fieldsets}>
-          <legend>Color Dots</legend>
+          <legend className={dotStyle.legend}>Color Dots</legend>
           <div className={dotStyle.divColors}>
             <p>Linear</p>
             <div className={dotStyle.button}>
-              <p style={{ color: "white" }}>I</p>
-              <div className={dotStyle.buttonSlack}></div>
-              <p style={{ color: "white" }}>O</p>
+              <p
+                className={dotStyle.p}
+                onClick={() => {
+                  setPosition("left");
+                }}
+              >
+                I
+              </p>
+              <div
+                className={dotStyle.buttonSlack}
+                style={{
+                  transition: " all 0.5s ease-in-out",
+                  ...(position === "middle"
+                    ? { transform: "translateX(0px)" }
+                    : position === "right"
+                      ? { transform: "translateX(38px)" }
+                      : { transform: "translateX(-35px)" }),
+                }}
+              ></div>
+              <p
+                className={dotStyle.p}
+                onClick={() => {
+                  setPosition("right");
+                }}
+              >
+                O
+              </p>
             </div>
             <p>Gradient</p>
           </div>
+        </fieldset>
+        <fieldset
+          className={dotStyle.fieldsets}
+          style={{
+            transition: "opacity 0.3s ease",
+            ...(position === "middle" ? { opacity: "0" } : { opacity: "1" }),
+          }}
+        >
+          <legend className={dotStyle.legend}>Colors preferences</legend>
+          {position === "left" ? (
+            <input
+              className={dotStyle.input}
+              type="color"
+              onChange={(e) => handlePick(e, "middle")}
+              style={{ background: color.color1 }}
+            />
+          ) : (
+            <>
+              <input
+                className={dotStyle.input}
+                type="color"
+                onChange={(e) => handlePick(e, "left")}
+                style={{ background: `${color}` }}
+              />
+              <input
+                className={dotStyle.input}
+                type="color"
+                onChange={(e) => handlePick(e, "right")}
+                style={{ background: `${color}` }}
+              />
+            </>
+          )}
         </fieldset>
       </div>
     </div>

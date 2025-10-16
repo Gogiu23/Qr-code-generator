@@ -37,6 +37,7 @@ export default function Logo({ tab, activeTab, open }: DataProps) {
           width={100}
           height={100}
           style={activeTab === tab ? view.rotateImage : view.defectImage}
+          priority
         />
       </div>
       <div

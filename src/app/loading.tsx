@@ -15,6 +15,7 @@ export default function Loading() {
         width={200}
         height={200}
         className={loadingStyle.logo}
+        priority
       />
     </div>
   );
