@@ -1,46 +1,33 @@
-"use client";
-import Main from "@/components/Main";
-import Navbar from "@/components/Navbar";
+import { Suspense } from "react";
 import Loading from "./loading";
-import { useEffect, useState } from "react";
+import { headers } from "next/headers";
+import Main from "@/components/Main";
 import MainMobile from "@/components/mobile/MainMobile";
+import Navbar from "@/components/Navbar";
 
-export default function Home() {
-  const [load, setLoad] = useState<boolean>(true);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+function isMobileUA(userAgent: string) {
+  return Boolean(
+    userAgent.match(
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i,
+    ),
+  );
+}
 
-  //chequear si es movil o ordenador
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1000) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-  // retardar la carga para obtener mejores prestaciones
-  useEffect(() => {
-    setTimeout(() => {
-      setLoad(false);
-    }, 3000);
-  }, []);
+export default async function Page() {
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+  const isMobile = isMobileUA(userAgent);
 
-  if (load) {
-    return <Loading />;
-  } else if (isMobile) {
-    return <MainMobile />;
-  } else {
-    return (
-      <div>
-        <Navbar />
-        <Main />
-      </div>
-    );
-  }
+  return (
+    <Suspense fallback={<Loading />}>
+      {isMobile ? (
+        <MainMobile />
+      ) : (
+        <div>
+          <Navbar />
+          <Main />
+        </div>
+      )}
+    </Suspense>
+  );
 }
