@@ -25,6 +25,7 @@ interface DataProps {
 
 export default function Dots({ tab, activeTab, open }: DataProps) {
   const [position, setPosition] = useState<string>("middle");
+  const [typeGradient, setTypeGradient] = useState<string>("middle");
   const { hex, setHex, setGradient } = useGlobalContext();
 
   const handlePick = (
@@ -86,12 +87,13 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
         <fieldset className={dotStyle.fieldsets}>
           <legend className={dotStyle.legend}>Color Dots</legend>
           <div className={dotStyle.divColors}>
-            <p>Linear</p>
+            <p>One Color</p>
             <div className={dotStyle.button}>
               <p
                 className={dotStyle.p}
                 onClick={() => {
                   setGradient({ gradient: false });
+                  setTypeGradient("middle");
                   setPosition("left");
                 }}
               >
@@ -112,6 +114,7 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
                 className={dotStyle.p}
                 onClick={() => {
                   setGradient({ gradient: true });
+                  setTypeGradient("left");
                   setPosition("right");
                 }}
               >
@@ -153,6 +156,52 @@ export default function Dots({ tab, activeTab, open }: DataProps) {
             </>
           )}
         </fieldset>
+        <fieldset
+          className={dotStyle.fieldsets}
+          style={{
+            transition: "opacity 0.3s ease",
+            ...(typeGradient === "middle"
+              ? { opacity: "0" }
+              : { opacity: "1" }),
+          }}
+        >
+          <legend className={dotStyle.legend}>Type of gradient</legend>
+          <div className={dotStyle.divColors}>
+            <p>Linear</p>
+            <div className={dotStyle.button}>
+              <p
+                className={dotStyle.p}
+                onClick={() => {
+                  setGradient({ gradient: false });
+                  setTypeGradient("left");
+                }}
+              >
+                I
+              </p>
+              <div
+                className={dotStyle.buttonSlack}
+                style={{
+                  transition: " all 0.5s ease-in-out",
+                  ...(typeGradient === "middle"
+                    ? { transform: "translateX(0px)" }
+                    : typeGradient === "right"
+                      ? { transform: "translateX(38px)" }
+                      : { transform: "translateX(-35px)" }),
+                }}
+              ></div>
+              <p
+                className={dotStyle.p}
+                onClick={() => {
+                  setGradient({ gradient: true });
+                  setTypeGradient("right");
+                }}
+              >
+                O
+              </p>
+            </div>
+            <p>Radial</p>
+          </div>
+        </fieldset>
       </div>
     </div>
   );
@@ -167,7 +216,7 @@ const view: ViewStyles = {
   open: {
     position: "absolute",
     top: "0%",
-    height: "50vh",
+    height: "60vh",
     background: "var(--pink)",
     transform: "translateY(100px)",
     zIndex: "99",
@@ -197,7 +246,7 @@ const view: ViewStyles = {
   divOpen: {
     position: "relative",
     zIndex: "99",
-    transform: "translateY(-53px)",
+    transform: "translateY(-121px)",
     transition: "transform 0.5s ease-in-out",
   },
   divClose: {

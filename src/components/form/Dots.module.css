@@ -27,16 +27,11 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background: linear-gradient(
-    to right,
-    var(--yellow) 51%,
-    var(--background) 50%
-  );
+  background: linear-gradient(to right, lightblue 40%, var(--background) 60%);
 }
 
 .buttonSlack {
-  border: 2px solid crimson;
-  background: var(--red);
+  background: coral;
   border-radius: 50px;
   z-index: 1;
   width: 48px;
