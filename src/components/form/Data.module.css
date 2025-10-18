@@ -1,0 +1,81 @@
+.bookDiv {
+  position: relative;
+  width: 100%;
+  user-select: none;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+.bookTitle {
+  width: 100%;
+  z-index: 98;
+  cursor: pointer;
+  font-size: 1.7rem;
+  font-weight: bold;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-bottom: 10px;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.divImage {
+  position: absolute;
+  background-image: url("/images/Data.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  top: 0;
+  right: 0;
+}
+.divBackground {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  background: linear-gradient(
+    to right,
+    var(--pink) 1%,
+    white 20%,
+    transparent 75%
+  );
+}
+.content {
+  display: flex;
+  color: var(--background);
+  background: var(--pink);
+  flex-direction: column;
+  justify-content: space-evenly;
+  border: 2px solid red;
+  align-items: center;
+  width: 100%;
+  height: 50vh;
+  cursor: auto;
+}
+.open {
+  position: relative;
+  background: var(--pink);
+  display: inline;
+}
+.close {
+  display: none;
+  /* z-index: 1; */
+  transition: opacity 0.2s ease;
+}
+.image {
+  transition: transform 0.3s ease;
+}
+
+.rotateImage {
+  transform: rotate(90deg);
+  will-change: transform;
+}

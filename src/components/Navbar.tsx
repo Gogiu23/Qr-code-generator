@@ -1,8 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Button } from "@material-tailwind/react";
 import styles from "./navbar.module.css";
-import { FaWindowClose } from "react-icons/fa";
 
 export default function Navbar() {
   return (

@@ -1,14 +1,18 @@
 .nav {
+  position: fixed;
+  background: var(--pink);
+  top: 0;
+  z-index: 99;
   display: flex;
   padding: 0 20px 0 20px;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
+  /* border: 2px solid red; */
+  height: 20vh;
   border-bottom: 4px solid;
-  /* This is the correct way to use a gradient on a border */
   border-image: linear-gradient(to right, var(--yellow) 30%, var(--red) 80%);
-  border-image-slice: 1; /* This is essential for the gradient to show up */
+  border-image-slice: 1;
 }
 .iconButt {
   color: var(--red);

@@ -126,7 +126,7 @@ const QrCodeClient = ({
           <Image
             width={300}
             height={300}
-            src="/images/Logo.png"
+            src="/images/Logo.webp"
             alt="placeholder image"
             style={{
               position: "absolute",

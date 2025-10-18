@@ -23,7 +23,7 @@ export default function Color({
   };
 
   return (
-    <label htmlFor="color">
+    <label ="color">
       <Button title="Button Color" onClick={handlePickerColor} variant="dark">
         Pick a color
       </Button>
