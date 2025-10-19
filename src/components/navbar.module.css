@@ -9,7 +9,7 @@
   justify-content: space-between;
   width: 100%;
   /* border: 2px solid red; */
-  height: 20vh;
+  height: 15vh;
   border-bottom: 4px solid;
   border-image: linear-gradient(to right, var(--yellow) 30%, var(--red) 80%);
   border-image-slice: 1;

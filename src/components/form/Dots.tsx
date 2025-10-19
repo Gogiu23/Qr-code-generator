@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import type { DotType } from "qr-code-styling";
 import styles from "./Data.module.css";
 import { Tab } from "../Main";
 import { memo, startTransition, useState } from "react";
@@ -15,7 +16,7 @@ interface DataProps {
 function Dots({ tab, activeTab, open }: DataProps) {
   const [position, setPosition] = useState<string>("middle");
   const [typeGradient, setTypeGradient] = useState<string>("middle");
-  const { hex, setHex, setGradient } = useGlobalContext();
+  const { hex, setHex, setGradient, typeDot, setTypeDot } = useGlobalContext();
 
   const handlePick = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -38,6 +39,11 @@ function Dots({ tab, activeTab, open }: DataProps) {
       }));
     }
   };
+
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTypeDot(e.target.value as DotType);
+  };
+
   const isActive = activeTab === tab;
 
   return (
@@ -46,7 +52,7 @@ function Dots({ tab, activeTab, open }: DataProps) {
         className={styles.bookTitle}
         onClick={() => startTransition(() => open(tab))}
       >
-        <div className={styles.divImage}></div>
+        <div className={`${styles.divImage} ${styles.divDots}`}></div>
         <div className={styles.divBackground}></div>
         {tab}
         <Image
@@ -63,13 +69,18 @@ function Dots({ tab, activeTab, open }: DataProps) {
       >
         <fieldset className={dotStyle.fieldsets}>
           <legend className={dotStyle.legend}>Dots shape</legend>
-          <select name="type" id="type id" className={dotStyle.select}>
-            <option value="1">Rounded</option>
-            <option value="1">Dots</option>
-            <option value="1">Classy</option>
-            <option value="1">Classy-rounded</option>
-            <option value="1">Square</option>
-            <option value="1">Extra rounded</option>
+          <select
+            name="type"
+            id="type id"
+            className={dotStyle.select}
+            onChange={handleSelect}
+          >
+            <option value="rounded">Rounded</option>
+            <option value="dots">Dots</option>
+            <option value="classy">Classy</option>
+            <option value="classy-rounded">Classy-rounded</option>
+            <option value="square">Square</option>
+            <option value="extra rounded">Extra rounded</option>
           </select>
         </fieldset>
         <fieldset className={dotStyle.fieldsets}>

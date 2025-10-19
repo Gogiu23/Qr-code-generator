@@ -26,7 +26,7 @@ export default function Main() {
   const [activeTab, setActiveTab] = useState<Tab | undefined>(undefined);
   const [isActive, setIsActive] = useState<boolean>(false);
 
-  const openDiv = useCallback((Tab: Tab) => {
+  const openDiv = (Tab: Tab) => {
     setActiveTab(Tab);
     if (activeTab === Tab) {
       setActiveTab(undefined);
@@ -36,7 +36,7 @@ export default function Main() {
       setIsActive(true);
     }
     console.log(Tab);
-  }, []);
+  };
 
   return (
     <div className={styles.contentMain}>

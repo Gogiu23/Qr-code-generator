@@ -37,7 +37,7 @@ function Data({
   return (
     <div id={tab} className={styles.bookDiv}>
       <div className={styles.bookTitle} onClick={() => open(tab)}>
-        <div className={styles.divImage}></div>
+        <div className={`${styles.divImage} ${styles.divData}`}></div>
         <div className={styles.divBackground}></div>
         {tab}
         <Image

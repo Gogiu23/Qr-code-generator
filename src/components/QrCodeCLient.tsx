@@ -22,7 +22,7 @@ const QrCodeClient = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
-  const { hex, gradient } = useGlobalContext();
+  const { hex, gradient, typeDot } = useGlobalContext();
 
   useEffect(() => {
     // Importa qr-code-styling solo en el cliente
@@ -70,6 +70,7 @@ const QrCodeClient = ({
 
   // Actualiza cada vez que cambien los props
   useEffect(() => {
+    console.log(typeDot);
     if (qrCode) {
       qrCode.update({
         width,
@@ -79,11 +80,12 @@ const QrCodeClient = ({
         dotsOptions: {
           color: hex.color1,
           ...gradientOptions,
+          type: typeDot,
         },
       });
       setStart(!(url && url.length > 0));
     }
-  }, [url, hex, width, height, margin, qrCode, gradient]);
+  }, [url, hex, width, height, margin, qrCode, gradient, typeDot]);
 
   const style: { boxImage: CSSProperties; download: CSSProperties } = {
     boxImage: {
@@ -102,7 +104,7 @@ const QrCodeClient = ({
       width: "80%",
       height: "100px",
       borderRadius: "10px",
-      border: "2px solid blue",
+      // border: "2px solid blue",
     },
   };
 

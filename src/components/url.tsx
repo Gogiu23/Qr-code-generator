@@ -1,12 +1,6 @@
 "use client";
-import { CSSProperties } from "react";
 import styles from "./url.module.css";
 import { FaSearch } from "react-icons/fa";
-
-interface ViewStyles {
-  mainDiv: CSSProperties;
-  input: CSSProperties;
-}
 
 interface UrlProps {
   setUrl: (url: string) => void;
@@ -39,7 +33,7 @@ export default function Url({
       setter(Number(event.target.value));
     };
   return (
-    <div style={divRanges.mainDiv}>
+    <div className={styles.mainDiv}>
       <label htmlFor="web">
         URL
         <div className={styles.divInput}>
@@ -52,7 +46,7 @@ export default function Url({
           <FaSearch className={styles.icon} />
         </div>
       </label>
-      <div style={divRanges.input}>
+      <div className={styles.input}>
         <label htmlFor="width">
           Width {width}
           <input
@@ -90,24 +84,3 @@ export default function Url({
     </div>
   );
 }
-
-const divRanges: ViewStyles = {
-  mainDiv: {
-    // border: "2px solid black",
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "start",
-    justifyContent: "space-around",
-  },
-  input: {
-    width: "100%",
-    height: "70%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "start",
-    justifyContent: "space-around",
-    // border: "2px solid red",
-  },
-};

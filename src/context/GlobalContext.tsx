@@ -1,5 +1,6 @@
 "use client";
 import { ReactNode, useContext, useState, createContext } from "react";
+import type { DotType } from "qr-code-styling";
 
 //Para objetos
 interface ColorState {
@@ -15,6 +16,8 @@ interface GlobalContextType {
   setHex: React.Dispatch<React.SetStateAction<ColorState>>;
   gradient: ColorBoolean;
   setGradient: React.Dispatch<React.SetStateAction<ColorBoolean>>;
+  typeDot: DotType;
+  setTypeDot: React.Dispatch<React.SetStateAction<DotType>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -29,12 +32,15 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
     color2: "",
   });
   const [gradient, setGradient] = useState<ColorBoolean>({ gradient: false });
+  const [typeDot, setTypeDot] = useState<DotType>("rounded");
 
   const value = {
     hex,
     setHex,
     gradient,
     setGradient,
+    typeDot,
+    setTypeDot,
   };
 
   return (

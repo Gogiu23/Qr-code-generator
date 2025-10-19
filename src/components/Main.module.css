@@ -1,11 +1,12 @@
 .divMain {
-  margin-top: 200px;
+  margin-top: 150px;
   display: grid;
   align-self: center;
   justify-content: center;
   grid-template-columns: 1fr 1fr;
+  /* border: 2px solid red; */
   width: 100%;
-  height: 100vh;
+  height: 84vh;
   padding: 30px;
   overflow-y: auto;
   scroll-behavior: smooth;
@@ -15,7 +16,7 @@
 .preview {
   position: sticky;
   top: 0px;
-  border: 2px solid red;
+  /* border: 2px solid red; */
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -24,15 +25,19 @@
   font-size: 1.3rem;
   font-weight: bold;
   text-align: center;
-  border: 4px solid var(--yellow);
+  /* border: 4px solid var(--yellow); */
   border-radius: 10px;
   min-width: 20vw;
   max-width: 50vw;
-  height: 80vh;
+  height: 75vh;
 }
 .form {
-  border: 2px solid red;
-  height: 100vh;
+  /* border: 2px solid red; */
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  height: auto;
 }
 .form label {
   margin-left: 10px;
