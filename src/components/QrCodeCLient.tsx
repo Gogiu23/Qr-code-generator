@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./QrCodeClient.module.css";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -22,7 +22,7 @@ const QrCodeClient = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
-  const { hex, gradient, typeDot } = useGlobalContext();
+  const { hex, gradient, typeDot, gradientType } = useGlobalContext();
 
   useEffect(() => {
     // Importa qr-code-styling solo en el cliente
@@ -50,26 +50,30 @@ const QrCodeClient = ({
     });
   }, []); // Solo al montar
 
-  const gradientOptions = gradient.gradient
-    ? {
-        gradient: {
-          type: "linear",
-          colorStops: [
-            {
-              offset: 0,
-              color: hex.color1,
-            },
-            {
-              offset: 1,
-              color: hex.color2,
-            },
-          ],
-        } satisfies Gradient,
-      }
-    : { gradient: undefined };
+  const gradientOptions = useMemo(() => {
+    if (!gradient.gradient) {
+      return { gradient: undefined };
+    }
+    return {
+      gradient: {
+        type: gradientType,
+        colorStops: [
+          {
+            offset: 0,
+            color: hex.color1,
+          },
+          {
+            offset: 1,
+            color: hex.color2,
+          },
+        ],
+      } satisfies Gradient,
+    };
+  }, [gradient.gradient, gradientType, hex.color1, hex.color2]);
 
   // Actualiza cada vez que cambien los props
   useEffect(() => {
+    console.log(gradientType);
     if (qrCode) {
       qrCode.update({
         width,
@@ -84,7 +88,18 @@ const QrCodeClient = ({
       });
       setStart(!(url && url.length > 0));
     }
-  }, [url, hex, width, height, margin, qrCode, gradient, typeDot]);
+  }, [
+    url,
+    hex,
+    width,
+    height,
+    margin,
+    qrCode,
+    // gradient,
+    typeDot,
+    // gradientType,
+    gradientOptions,
+  ]);
 
   return (
     <>

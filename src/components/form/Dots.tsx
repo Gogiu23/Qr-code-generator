@@ -10,7 +10,8 @@ function Dots() {
   const [position, setPosition] = useState<string>("middle");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [typeGradient, setTypeGradient] = useState<string>("middle");
-  const { hex, setHex, setGradient, setTypeDot } = useGlobalContext();
+  const { hex, setHex, setGradient, setTypeDot, setGradientType } =
+    useGlobalContext();
 
   const handlePick = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -93,7 +94,7 @@ function Dots() {
               <div
                 className={dotStyle.buttonSlack}
                 style={{
-                  transition: " all 0.5s ease-in-out",
+                  transition: " all 0.5s  cubic-bezier(0.11, 1.7, 0.76, 1)",
                   ...(position === "middle"
                     ? { transform: "translateX(0px)" }
                     : position === "right"
@@ -163,8 +164,8 @@ function Dots() {
               <p
                 className={dotStyle.p}
                 onClick={() => {
-                  setGradient({ gradient: false });
                   setTypeGradient("left");
+                  setGradientType("linear");
                 }}
               >
                 I
@@ -172,7 +173,7 @@ function Dots() {
               <div
                 className={dotStyle.buttonSlack}
                 style={{
-                  transition: " all 0.5s ease-in-out",
+                  transition: " all 0.5s cubic-bezier(0.25, 1.3, 0.5, 1)",
                   ...(typeGradient === "middle"
                     ? { transform: "translateX(0px)" }
                     : typeGradient === "right"
@@ -183,8 +184,8 @@ function Dots() {
               <p
                 className={dotStyle.p}
                 onClick={() => {
-                  setGradient({ gradient: true });
                   setTypeGradient("right");
+                  setGradientType("radial");
                 }}
               >
                 O

@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import styles from "./url.module.css";
 import { FaSearch } from "react-icons/fa";
 
@@ -23,9 +24,25 @@ export default function Url({
   height,
   margin,
 }: UrlProps) {
+  const [size, setSize] = useState<number>(600);
+
   const urlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(event.target.value);
   };
+
+  const getSize = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const numberSize = Number(e.target.value);
+    setSize(numberSize);
+    setHeight(numberSize / 2);
+    setWidth(numberSize / 2);
+  };
+
+  const min = 100;
+  const max = 1000;
+  const percent = ((size - min) / (max - min)) * 100;
+  const minMarg = 0;
+  const maxMarg = 50;
+  const percentMarg = ((margin - minMarg) / (maxMarg - minMarg)) * 100;
 
   const handleSliderChange =
     (setter: (val: number) => void) =>
@@ -42,44 +59,44 @@ export default function Url({
             type="url"
             placeholder="Inserta la direccion web"
             onChange={urlChange}
+            className={styles.inputUrl}
           />
           <FaSearch className={styles.icon} />
         </div>
       </label>
       <div className={styles.input}>
-        <label htmlFor="width">
-          Width {width}
-          <input
-            className={styles.rangeInput}
-            value={width}
-            type="range"
-            min={100}
-            max={500}
-            onChange={handleSliderChange(setWidth)}
-          />
-        </label>
-        <label htmlFor="height">
-          Height {height}
-          <input
-            className={styles.rangeInput}
-            value={height}
-            type="range"
-            min={100}
-            max={500}
-            onChange={handleSliderChange(setHeight)}
-          />
-        </label>
-        <label htmlFor="margin">
-          Margin {margin}
-          <input
-            className={styles.rangeInput}
-            value={margin}
-            type="range"
-            min={0}
-            max={50}
-            onChange={handleSliderChange(setMargin)}
-          />
-        </label>
+        <fieldset className={styles.fieldset}>
+          <legend className={styles.legend}>Size</legend>
+          <div className={styles.size}>
+            <span className={styles.span} style={{ left: `calc(${percent}%)` }}>
+              {size}
+            </span>
+            <input
+              className={styles.rangeInput}
+              value={size}
+              type="range"
+              min={100}
+              max={1000}
+              onChange={getSize}
+            />
+          </div>
+        </fieldset>
+        <fieldset className={styles.fieldset}>
+          <legend className={styles.legend}>Margin</legend>
+          <div className={styles.margin}>
+            <span className={styles.span} style={{ left: `${percentMarg}%` }}>
+              {margin}
+            </span>
+            <input
+              className={styles.rangeInput}
+              value={margin}
+              type="range"
+              min={0}
+              max={50}
+              onChange={handleSliderChange(setMargin)}
+            />
+          </div>
+        </fieldset>
       </div>
     </div>
   );
