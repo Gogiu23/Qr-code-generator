@@ -68,12 +68,12 @@ function Dots() {
             className={dotStyle.select}
             onChange={handleSelect}
           >
-            <option value="rounded">Rounded</option>
-            <option value="dots">Dots</option>
+            <option value="square">Square</option>
             <option value="classy">Classy</option>
             <option value="classy-rounded">Classy-rounded</option>
-            <option value="square">Square</option>
-            <option value="extra rounded">Extra rounded</option>
+            <option value="dots">Dots</option>
+            <option value="rounded">Rounded</option>
+            <option value="extra-rounded">Extra rounded</option>
           </select>
         </fieldset>
         <fieldset className={dotStyle.fieldsets}>

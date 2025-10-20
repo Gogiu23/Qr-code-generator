@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./QrCodeClient.module.css";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import QRCodeStyling, { Gradient } from "qr-code-styling";
+import QRCodeStyling, { FileExtension, Gradient } from "qr-code-styling";
 import { useGlobalContext } from "@/context/GlobalContext";
 import Button from "./ui/Button";
 
@@ -23,6 +23,7 @@ const QrCodeClient = ({
   const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
   const { hex, gradient, typeDot, gradientType } = useGlobalContext();
+  const [fileExt, setFileExt] = useState<FileExtension>("png");
 
   useEffect(() => {
     // Importa qr-code-styling solo en el cliente
@@ -101,6 +102,28 @@ const QrCodeClient = ({
     gradientOptions,
   ]);
 
+  const handleDownload = () => {
+    if (!qrCode) {
+      alert(
+        "Qr code is not ready to be download (empty or some others errors)",
+      );
+      return;
+    }
+    try {
+      qrCode.download({
+        name: "Quode",
+        extension: fileExt,
+      });
+    } catch (error) {
+      alert("qr code is empty");
+      console.error("Download errro", error);
+      console.log(error);
+    }
+  };
+  const handleExtDown = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFileExt(e.target.value as FileExtension);
+  };
+
   return (
     <>
       <div className={styles.boxImage}>
@@ -121,8 +144,13 @@ const QrCodeClient = ({
       </div>
 
       <div className={styles.download}>
-        <Button>Download</Button>
-        <select name="format" id="formatDownload" className={styles.select}>
+        <Button onClick={handleDownload}>Download</Button>
+        <select
+          name="format"
+          id="formatDownload"
+          className={styles.select}
+          onChange={handleExtDown}
+        >
           <option value="PNG">PNG</option>
           <option value="JPEG">JPEG</option>
           <option value="SVG">SVG</option>
