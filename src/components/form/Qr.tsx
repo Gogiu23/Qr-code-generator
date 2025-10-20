@@ -1,35 +1,30 @@
 "use client";
 import Image from "next/image";
 import styles from "./Data.module.css";
-import { Tab } from "../Main";
-import { memo } from "react";
+import { memo, useState } from "react";
 
-interface DataProps {
-  tab: Tab;
-  activeTab: Tab | undefined;
-  open: (tab: Tab) => void;
-}
+function Qr() {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-function Qr({ tab, activeTab, open }: DataProps) {
-  const isActive = activeTab === tab;
-
+  const handleOpenClick = () => {
+    setIsOpen((prev) => !prev);
+  };
   return (
-    <div id={tab} className={styles.bookDiv}>
-      <div className={styles.bookTitle} onClick={() => open(tab)}>
+    <div className={styles.bookDiv}>
+      <div className={styles.bookTitle} onClick={() => handleOpenClick()}>
         <div className={`${styles.divImage} ${styles.divQr}`}></div>
-        <div className={styles.divBackground}></div>
-        {tab}
+        <p className={styles.p}>Qr settings</p>
         <Image
           src="/images/bookRemind.png"
           alt="image book title"
           width={100}
           height={100}
           priority
-          className={`${styles.image} ${isActive ? styles.rotateImage : ""}`}
+          className={`${styles.image} ${isOpen ? styles.rotateImage : ""}`}
         />
       </div>
       <div
-        className={`${styles.content} ${isActive ? styles.open : styles.close}`}
+        className={`${styles.content} ${isOpen ? styles.open : styles.close}`}
       ></div>
     </div>
   );

@@ -8,13 +8,14 @@
   color: #fff;
 }
 .bookTitle {
-  position: absolute;
-  top: 0;
+  position: relative;
+  /* top: 0; */
   width: 100%;
   z-index: 98;
   cursor: pointer;
   font-size: 1.7rem;
   font-weight: bold;
+  color: white;
   /* border: 3px solid green; */
   padding-top: 20px;
   padding-left: 20px;
@@ -24,8 +25,20 @@
   justify-content: space-between;
   align-items: center;
 }
+.p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  background: rgba(33, 33, 33, 0.7);
+  border-radius: 5px;
+  padding: 0 15px 0 15px;
+}
 .divImage {
   position: absolute;
+  border-radius: 10px;
+  user-select: none;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -39,7 +52,7 @@
   background-image: url("/images/image.jpg");
 }
 .divData {
-  background-image: url("/images/data.jpg");
+  background-image: url("/images/data.webp");
 }
 .divDots {
   background-image: url("/images/dots.jpg");
@@ -53,24 +66,10 @@
 .divQr {
   background-image: url("/images/qr.jpg");
 }
-.divBackground {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  top: 0;
-  right: 0;
-  background: linear-gradient(
-    to right,
-    var(--pink) 1%,
-    white 20%,
-    transparent 75%
-  );
-}
 .content {
-  background: rgba(254, 178, 26, 0.4);
-  padding-top: 10vh;
   padding-bottom: 20px;
+  overflow: hidden;
+  padding-top: 10px;
   display: flex;
   position: relative;
   color: var(--background);
@@ -81,26 +80,22 @@
   width: 100%;
   height: auto;
   cursor: auto;
-  will-change: max-height, opacity;
+  transition:
+    max-height 0.5s ease-in-out,
+    opacity 0.4s ease-in-out;
 }
 .open {
+  /* padding-top: 12vh; */
   opacity: 1;
-  max-height: 100vh;
-  transition:
-    max-height 0.5s ease,
-    opacity 0.2s ease;
+  max-height: 1000px;
 }
 .close {
   opacity: 0;
-  max-height: 0vh;
-  transition:
-    max-height 0.5s ease,
-    opacity 0.1s ease;
+  max-height: 0;
 }
 .image {
-  transition: transform 0.3s ease;
+  transition: transform 0.1s ease;
 }
 .rotateImage {
   transform: rotate(90deg);
-  will-change: transform;
 }

@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import styles from "./QrCodeClient.module.css";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { Button } from "@material-tailwind/react";
-import { CSSProperties } from "react";
 import QRCodeStyling, { Gradient } from "qr-code-styling";
 import { useGlobalContext } from "@/context/GlobalContext";
+import Button from "./ui/Button";
 
 // ✅ Carga dinámica (por si lo importan en otro lado)
 const QrCodeClient = ({
@@ -70,7 +70,6 @@ const QrCodeClient = ({
 
   // Actualiza cada vez que cambien los props
   useEffect(() => {
-    console.log(typeDot);
     if (qrCode) {
       qrCode.update({
         width,
@@ -87,42 +86,12 @@ const QrCodeClient = ({
     }
   }, [url, hex, width, height, margin, qrCode, gradient, typeDot]);
 
-  const style: { boxImage: CSSProperties; download: CSSProperties } = {
-    boxImage: {
-      position: "relative",
-      width: "500px",
-      height: "500px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    download: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "10px",
-      width: "80%",
-      height: "100px",
-      borderRadius: "10px",
-      // border: "2px solid blue",
-    },
-  };
-
   return (
     <>
-      <div style={style.boxImage}>
+      <div className={styles.boxImage}>
         <div
           ref={ref}
-          style={{
-            opacity: start ? 0 : 1,
-            transition: "opacity 0.3s",
-            width: "300px",
-            height: "300px",
-            borderRadius: "10px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          className={`${styles.divRef}${start ? styles.visible : styles.notVisible}`}
         ></div>
         {start && (
           <Image
@@ -130,20 +99,15 @@ const QrCodeClient = ({
             height={300}
             src="/images/Logo.webp"
             alt="placeholder image"
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
+            className={styles.divImage}
             priority
           />
         )}
       </div>
 
-      <div className="download" style={style.download}>
+      <div className={styles.download}>
         <Button>Download</Button>
-        <select name="format" id="formatDownload">
+        <select name="format" id="formatDownload" className={styles.select}>
           <option value="PNG">PNG</option>
           <option value="JPEG">JPEG</option>
           <option value="SVG">SVG</option>

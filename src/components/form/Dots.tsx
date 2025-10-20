@@ -2,21 +2,15 @@
 import Image from "next/image";
 import type { DotType } from "qr-code-styling";
 import styles from "./Data.module.css";
-import { Tab } from "../Main";
-import { memo, startTransition, useState } from "react";
+import { memo, useState } from "react";
 import dotStyle from "./Dots.module.css";
 import { useGlobalContext } from "@/context/GlobalContext";
 
-interface DataProps {
-  tab: Tab;
-  activeTab: Tab | undefined;
-  open: (tab: Tab) => void;
-}
-
-function Dots({ tab, activeTab, open }: DataProps) {
+function Dots() {
   const [position, setPosition] = useState<string>("middle");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [typeGradient, setTypeGradient] = useState<string>("middle");
-  const { hex, setHex, setGradient, typeDot, setTypeDot } = useGlobalContext();
+  const { hex, setHex, setGradient, setTypeDot } = useGlobalContext();
 
   const handlePick = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -44,28 +38,26 @@ function Dots({ tab, activeTab, open }: DataProps) {
     setTypeDot(e.target.value as DotType);
   };
 
-  const isActive = activeTab === tab;
+  const handleOpenTab = () => {
+    setIsOpen((prev) => !prev);
+  };
 
   return (
-    <div id={tab} className={styles.bookDiv}>
-      <div
-        className={styles.bookTitle}
-        onClick={() => startTransition(() => open(tab))}
-      >
+    <div className={styles.bookDiv}>
+      <div className={styles.bookTitle} onClick={() => handleOpenTab()}>
         <div className={`${styles.divImage} ${styles.divDots}`}></div>
-        <div className={styles.divBackground}></div>
-        {tab}
+        <p className={styles.p}>Dots</p>
         <Image
           src="/images/bookRemind.png"
           alt="image book title"
           width={100}
           height={100}
           priority
-          className={`${styles.image} ${isActive ? styles.rotateImage : ""}`}
+          className={`${styles.image} ${isOpen ? styles.rotateImage : ""}`}
         />
       </div>
       <div
-        className={`${styles.content} ${isActive ? styles.open : styles.close}`}
+        className={`${styles.content} ${isOpen ? styles.open : styles.close}`}
       >
         <fieldset className={dotStyle.fieldsets}>
           <legend className={dotStyle.legend}>Dots shape</legend>
