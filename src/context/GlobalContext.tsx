@@ -1,6 +1,11 @@
 "use client";
-import { ReactNode, useContext, useState, createContext } from "react";
-import type { DotType, GradientType } from "qr-code-styling";
+import React, { ReactNode, useContext, useState, createContext } from "react";
+import type {
+  DotType,
+  GradientType,
+  CornerDotType,
+  CornerSquareType,
+} from "qr-code-styling";
 
 //Para objetos
 interface ColorState {
@@ -22,6 +27,10 @@ interface GlobalContextType {
   setGradientType: React.Dispatch<React.SetStateAction<GradientType>>;
   rotation: number;
   setRotation: React.Dispatch<React.SetStateAction<number>>;
+  cornerType: CornerDotType;
+  setCornerType: React.Dispatch<React.SetStateAction<CornerDotType>>;
+  cornerSquare: CornerSquareType;
+  setCornerSquareType: React.Dispatch<React.SetStateAction<CornerSquareType>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -31,6 +40,9 @@ interface GlobalProviderProps {
 }
 
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
+  const [cornerSquare, setCornerSquareType] =
+    useState<CornerSquareType>("dots");
+  const [cornerType, setCornerType] = useState<CornerDotType>("classy");
   const [rotation, setRotation] = useState<number>(0);
   const [hex, setHex] = useState<ColorState>({
     color1: "",
@@ -51,6 +63,10 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
     setGradientType,
     rotation,
     setRotation,
+    cornerType,
+    setCornerType,
+    cornerSquare,
+    setCornerSquareType,
   };
 
   return (

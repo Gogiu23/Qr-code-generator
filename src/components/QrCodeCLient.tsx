@@ -22,7 +22,15 @@ const QrCodeClient = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
-  const { hex, gradient, typeDot, gradientType, rotation } = useGlobalContext();
+  const {
+    hex,
+    gradient,
+    typeDot,
+    gradientType,
+    rotation,
+    cornerType,
+    cornerSquare,
+  } = useGlobalContext();
   const [fileExt, setFileExt] = useState<FileExtension>("png");
 
   useEffect(() => {
@@ -83,9 +91,15 @@ const QrCodeClient = ({
         data: url,
         margin,
         dotsOptions: {
+          type: typeDot,
           color: hex.color1,
           ...gradientOptions,
-          type: typeDot,
+        },
+        cornersSquareOptions: {
+          type: cornerSquare,
+        },
+        cornersDotOptions: {
+          type: cornerType,
         },
       });
       setStart(!(url && url.length > 0));
@@ -97,10 +111,10 @@ const QrCodeClient = ({
     height,
     margin,
     qrCode,
-    // gradient,
     typeDot,
-    // gradientType,
     gradientOptions,
+    cornerType,
+    cornerSquare,
   ]);
 
   const handleDownload = () => {

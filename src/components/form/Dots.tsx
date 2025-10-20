@@ -108,8 +108,8 @@ function Dots() {
                   ...(position === "middle"
                     ? { transform: "translateX(0px)" }
                     : position === "right"
-                      ? { transform: "translateX(67px) rotate(90deg)" }
-                      : { transform: "translateX(-67px)" }),
+                      ? { transform: "translateX(62px) rotate(90deg)" }
+                      : { transform: "translateX(-45px)" }),
                 }}
               ></div>
               <p
@@ -120,7 +120,7 @@ function Dots() {
                   setPosition("right");
                 }}
               >
-                Gradient
+                Two colors
               </p>
             </div>
           </div>
@@ -185,8 +185,8 @@ function Dots() {
                   ...(typeGradient === "middle"
                     ? { transform: "translateX(0px)" }
                     : typeGradient === "right"
-                      ? { transform: "translateX(67px) rotate(90deg)" }
-                      : { transform: "translateX(-67px)" }),
+                      ? { transform: "translateX(62px) rotate(90deg)" }
+                      : { transform: "translateX(-45px)" }),
                 }}
               ></div>
               <p

@@ -36,26 +36,28 @@
   /* border: 2px solid blue; */
   box-shadow: 11px 1px 6px;
   cursor: pointer;
-  width: 173px;
+  width: 149px;
   height: 52px;
-  border-radius: 30px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: space-around;
   background: linear-gradient(
     to right,
     var(--yellow) 40%,
-    var(--background) 70%
+    var(--red) 30%,
+    var(--red) 60%,
+    var(--background) 80%
   );
 }
 
 .buttonSlack {
-  box-shadow: 6px 2px 5px 0.8px;
-  background: rgba(234, 124, 190, 0.9);
+  box-shadow: 0px 4px 8px 2.11px;
+  background: rgba(84, 124, 190, 0.9);
   border-radius: 10px;
   z-index: 1;
-  width: 59px;
-  height: 60px;
+  width: 57px;
+  height: 50px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
