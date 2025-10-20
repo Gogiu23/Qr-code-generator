@@ -2,7 +2,7 @@
 import Image from "next/image";
 import type { DotType } from "qr-code-styling";
 import styles from "./Data.module.css";
-import { memo, useState } from "react";
+import React, { memo, useState } from "react";
 import dotStyle from "./Dots.module.css";
 import { useGlobalContext } from "@/context/GlobalContext";
 
@@ -10,8 +10,15 @@ function Dots() {
   const [position, setPosition] = useState<string>("middle");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [typeGradient, setTypeGradient] = useState<string>("middle");
-  const { hex, setHex, setGradient, setTypeDot, setGradientType } =
-    useGlobalContext();
+  const {
+    hex,
+    setHex,
+    setGradient,
+    setTypeDot,
+    setGradientType,
+    rotation,
+    setRotation,
+  } = useGlobalContext();
 
   const handlePick = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -42,6 +49,10 @@ function Dots() {
   const handleOpenTab = () => {
     setIsOpen((prev) => !prev);
   };
+
+  const min = 0;
+  const max = 360;
+  const percent = ((rotation - min) / (max - min)) * 100;
 
   return (
     <div className={styles.bookDiv}>
@@ -79,7 +90,6 @@ function Dots() {
         <fieldset className={dotStyle.fieldsets}>
           <legend className={dotStyle.legend}>Color Dots</legend>
           <div className={dotStyle.divColors}>
-            <p>One Color</p>
             <div className={dotStyle.button}>
               <p
                 className={dotStyle.p}
@@ -89,7 +99,7 @@ function Dots() {
                   setPosition("left");
                 }}
               >
-                I
+                One Color
               </p>
               <div
                 className={dotStyle.buttonSlack}
@@ -98,8 +108,8 @@ function Dots() {
                   ...(position === "middle"
                     ? { transform: "translateX(0px)" }
                     : position === "right"
-                      ? { transform: "translateX(38px)" }
-                      : { transform: "translateX(-35px)" }),
+                      ? { transform: "translateX(67px) rotate(90deg)" }
+                      : { transform: "translateX(-67px)" }),
                 }}
               ></div>
               <p
@@ -110,10 +120,9 @@ function Dots() {
                   setPosition("right");
                 }}
               >
-                O
+                Gradient
               </p>
             </div>
-            <p>Gradient</p>
           </div>
         </fieldset>
         <fieldset
@@ -159,7 +168,6 @@ function Dots() {
         >
           <legend className={dotStyle.legend}>Type of gradient</legend>
           <div className={dotStyle.divColors}>
-            <p>Linear</p>
             <div className={dotStyle.button}>
               <p
                 className={dotStyle.p}
@@ -168,7 +176,7 @@ function Dots() {
                   setGradientType("linear");
                 }}
               >
-                I
+                Linear
               </p>
               <div
                 className={dotStyle.buttonSlack}
@@ -177,8 +185,8 @@ function Dots() {
                   ...(typeGradient === "middle"
                     ? { transform: "translateX(0px)" }
                     : typeGradient === "right"
-                      ? { transform: "translateX(38px)" }
-                      : { transform: "translateX(-35px)" }),
+                      ? { transform: "translateX(67px) rotate(90deg)" }
+                      : { transform: "translateX(-67px)" }),
                 }}
               ></div>
               <p
@@ -188,10 +196,30 @@ function Dots() {
                   setGradientType("radial");
                 }}
               >
-                O
+                Radial
               </p>
             </div>
-            <p>Radial</p>
+          </div>
+          <div className={dotStyle.divRotationGrad}>
+            <span
+              style={{
+                top: "1%",
+                left: `calc(${percent}%)`,
+              }}
+            >
+              {rotation} deg
+            </span>
+            <input
+              value={rotation}
+              min={0}
+              max={360}
+              type="range"
+              className="divInput"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const numberRotation = Number(e.target.value);
+                setRotation(numberRotation);
+              }}
+            />
           </div>
         </fieldset>
       </div>

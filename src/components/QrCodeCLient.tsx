@@ -22,7 +22,7 @@ const QrCodeClient = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
-  const { hex, gradient, typeDot, gradientType } = useGlobalContext();
+  const { hex, gradient, typeDot, gradientType, rotation } = useGlobalContext();
   const [fileExt, setFileExt] = useState<FileExtension>("png");
 
   useEffect(() => {
@@ -58,6 +58,7 @@ const QrCodeClient = ({
     return {
       gradient: {
         type: gradientType,
+        rotation: rotation,
         colorStops: [
           {
             offset: 0,
@@ -70,7 +71,7 @@ const QrCodeClient = ({
         ],
       } satisfies Gradient,
     };
-  }, [gradient.gradient, gradientType, hex.color1, hex.color2]);
+  }, [gradient.gradient, gradientType, rotation, hex.color1, hex.color2]);
 
   // Actualiza cada vez que cambien los props
   useEffect(() => {

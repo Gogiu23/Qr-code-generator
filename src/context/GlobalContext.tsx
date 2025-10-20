@@ -20,6 +20,8 @@ interface GlobalContextType {
   setTypeDot: React.Dispatch<React.SetStateAction<DotType>>;
   gradientType: GradientType;
   setGradientType: React.Dispatch<React.SetStateAction<GradientType>>;
+  rotation: number;
+  setRotation: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -29,6 +31,7 @@ interface GlobalProviderProps {
 }
 
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
+  const [rotation, setRotation] = useState<number>(0);
   const [hex, setHex] = useState<ColorState>({
     color1: "",
     color2: "",
@@ -46,6 +49,8 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
     setTypeDot,
     gradientType,
     setGradientType,
+    rotation,
+    setRotation,
   };
 
   return (

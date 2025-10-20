@@ -34,3 +34,45 @@ body {
     /* --foreground: #ededed; */
   }
 }
+
+/* Quitar estilos nativos */
+input {
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* Web Safari & Edge */
+input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* Mozilla Firefox */
+input::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* WebKit (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Mozilla (Firefox) */
+input[type="range"]::-moz-range-track {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+span {
+  position: absolute;
+  top: -400%;
+  text-wrap: nowrap;
+  transform: translateX(-50%);
+  border: 2px solid black;
+  color: white;
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 10px;
+  align-self: center;
+  background: linear-gradient(to right, #333 60%, var(--yellow) 70%, #333 80%);
+  transition: left 0.1s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
