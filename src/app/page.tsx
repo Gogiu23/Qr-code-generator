@@ -18,12 +18,12 @@ export default async function Page() {
   const isMobile = isMobileUA(userAgent);
 
   return isMobile ? (
-    <MainMobile />
+    <Suspense fallback={<Loading />}>
+      <MainMobile />
+    </Suspense>
   ) : (
     <Suspense fallback={<Loading />}>
-      <div>
-        <Main />
-      </div>
+      <Main />
     </Suspense>
   );
 }

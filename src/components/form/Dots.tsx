@@ -124,7 +124,7 @@ function Dots() {
             name="type"
             id="type id"
             className={dotStyle.select}
-            onChange={() => handleSelect}
+            onChange={handleSelect}
           >
             <option value="classy">Classy</option>
             <option value="square">Square</option>

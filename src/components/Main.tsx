@@ -1,7 +1,7 @@
 "use client";
 import styles from "./Main.module.css";
-import QrCodeClient from "./QrCodeCLient";
 import { useState } from "react";
+import QrCodeClient from "./QrCodeCLient";
 import Data from "./form/Data";
 import Dots from "./form/Dots";
 import Corner from "./form/Corner";

@@ -135,7 +135,7 @@
   /*   inset 1px 1px 3px hsl(var(--hue) 74% 71% / 100%), */
   /*   inset 1px 7px 9px hsl(var(--hue) 63% 24% / 100%), */
   /*   inset 0px 5px 10px hsl(var(--hue) 57% 45% / 100%); */
-  /* border: none; */
+  border: none;
 }
 
 .p {
