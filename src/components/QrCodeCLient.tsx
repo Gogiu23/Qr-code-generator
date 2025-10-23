@@ -83,7 +83,7 @@ const QrCodeClient = ({
 
   // Actualiza cada vez que cambien los props
   useEffect(() => {
-    console.log(gradientType);
+    // console.log(gradientType);
     if (qrCode) {
       qrCode.update({
         width,

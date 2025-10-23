@@ -41,7 +41,7 @@ interface GlobalProviderProps {
 
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
   const [cornerSquare, setCornerSquareType] =
-    useState<CornerSquareType>("dots");
+    useState<CornerSquareType>("classy");
   const [cornerType, setCornerType] = useState<CornerDotType>("classy");
   const [rotation, setRotation] = useState<number>(0);
   const [hex, setHex] = useState<ColorState>({
@@ -49,7 +49,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
     color2: "",
   });
   const [gradient, setGradient] = useState<ColorBoolean>({ gradient: false });
-  const [typeDot, setTypeDot] = useState<DotType>("rounded");
+  const [typeDot, setTypeDot] = useState<DotType>("classy");
   const [gradientType, setGradientType] = useState<GradientType>("linear");
 
   const value = {

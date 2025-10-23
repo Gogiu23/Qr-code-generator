@@ -46,12 +46,12 @@ function Corner() {
             onChange={handleCornerType}
           >
             {" "}
+            <option value="classy">Classy</option>
             <option value="dot">Dot</option>
             <option value="dots">Dots</option>
             <option value="square">Square</option>
             <option value="rounded">Rounded</option>
             <option value="extra-rounded">Extra-rounded</option>
-            <option value="classy">Classy</option>
             <option value="classy-rounded">Classy-rounded</option>
           </select>
         </fieldset>
@@ -65,12 +65,12 @@ function Corner() {
             onChange={handleCornerTypeSquare}
           >
             {" "}
+            <option value="classy">Classy</option>
             <option value="dot">Dot</option>
             <option value="dots">Dots</option>
             <option value="square">Square</option>
             <option value="rounded">Rounded</option>
             <option value="extra-rounded">Extra-rounded</option>
-            <option value="classy">Classy</option>
             <option value="classy-rounded">Classy-rounded</option>
           </select>
         </fieldset>

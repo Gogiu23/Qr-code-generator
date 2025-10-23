@@ -2,13 +2,16 @@
 import Image from "next/image";
 import type { DotType } from "qr-code-styling";
 import styles from "./Data.module.css";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import dotStyle from "./Dots.module.css";
 import { useGlobalContext } from "@/context/GlobalContext";
+import { Toggle } from "../ui/ToggleSwitch";
 
 function Dots() {
-  const [position, setPosition] = useState<string>("middle");
+  const [position, setPosition] = useState<string>("left");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [value, setValue] = useState("left");
+  const [valueGradient, setValueGradient] = useState("left");
   const [typeGradient, setTypeGradient] = useState<string>("middle");
   const {
     hex,
@@ -20,6 +23,7 @@ function Dots() {
     setRotation,
   } = useGlobalContext();
 
+  // funcion para detectar el tipo de color escogido
   const handlePick = (
     e: React.ChangeEvent<HTMLInputElement>,
     value: string,
@@ -42,17 +46,55 @@ function Dots() {
     }
   };
 
+  //Funcion para detectar el tipo de Dot
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTypeDot(e.target.value as DotType);
   };
 
+  //Funcion para abrir el contendor grande
   const handleOpenTab = () => {
     setIsOpen((prev) => !prev);
   };
 
+  //Use effect para cambiar el estado rapidamente y aparecer en pantalla
+  useEffect(() => {
+    //si Value es left el toggle se desplaza a la izquierda y viceversa
+    if (value === "left") {
+      setGradient({ gradient: false });
+      setTypeGradient("middle");
+      setPosition("left");
+    } else {
+      setGradient({ gradient: true });
+      setTypeGradient("left");
+      setPosition("right");
+    }
+  }, [value]);
+
+  //Determina el tipo de gradiente, si linear o radial
+  useEffect(() => {
+    //Si typeGradient es left, sera linear. Si no radial
+    if (valueGradient === "left") {
+      setGradientType("linear");
+    } else {
+      setGradientType("radial");
+    }
+  }, [valueGradient]);
+
+  //Funcion para determinar el valor del toggle
+  const handleChangeToogleGradient = (newValue: string) => {
+    setValue(newValue);
+  };
+
+  //funciona para determinar el valor del typeGradient
+  const handleTypeGradientToggle = (Value: string) => {
+    setValueGradient(Value);
+  };
+
+  //Valores para poder determinar la posicion del span sobre el inpute range
   const min = 0;
   const max = 360;
-  const percent = ((rotation - min) / (max - min)) * 100;
+  const degree = rotation * (180 / Math.PI);
+  const percent = ((degree - min) / (max - min)) * 100;
 
   return (
     <div className={styles.bookDiv}>
@@ -71,16 +113,17 @@ function Dots() {
       <div
         className={`${styles.content} ${isOpen ? styles.open : styles.close}`}
       >
+        {/*Aqui empieza el contenido dentro de la tarjeta*/}
         <fieldset className={dotStyle.fieldsets}>
           <legend className={dotStyle.legend}>Dots shape</legend>
           <select
             name="type"
             id="type id"
             className={dotStyle.select}
-            onChange={handleSelect}
+            onChange={() => handleSelect}
           >
-            <option value="square">Square</option>
             <option value="classy">Classy</option>
+            <option value="square">Square</option>
             <option value="classy-rounded">Classy-rounded</option>
             <option value="dots">Dots</option>
             <option value="rounded">Rounded</option>
@@ -90,41 +133,12 @@ function Dots() {
         <fieldset className={dotStyle.fieldsets}>
           <legend className={dotStyle.legend}>Color Dots</legend>
           <div className={dotStyle.divColors}>
-            <div className={dotStyle.button}>
-              <p
-                className={dotStyle.p}
-                onClick={() => {
-                  setGradient({ gradient: false });
-                  setTypeGradient("middle");
-                  setPosition("left");
-                }}
-              >
-                One Color
-              </p>
-              <div
-                className={dotStyle.buttonSlack}
-                style={{
-                  transition: " all 0.5s  cubic-bezier(0.11, 1.7, 0.76, 1)",
-                  ...(position === "middle"
-                    ? { transform: "translateX(0px)" }
-                    : position === "right"
-                      ? { transform: "translateX(62px) rotate(90deg)" }
-                      : { transform: "translateX(-45px)" }),
-                }}
-              ></div>
-              <p
-                className={dotStyle.p}
-                onClick={() => {
-                  setGradient({ gradient: true });
-                  setTypeGradient("left");
-                  setPosition("right");
-                }}
-              >
-                Two colors
-              </p>
-            </div>
+            <p className={dotStyle.p}>1 Color</p>
+            <Toggle value={value} onChangeValue={handleChangeToogleGradient} />
+            <p className={dotStyle.p}>2 Colors</p>
           </div>
         </fieldset>
+        {/*Renderiza solo si position este en left o right*/}
         <fieldset
           className={dotStyle.fieldsets}
           style={{
@@ -157,49 +171,26 @@ function Dots() {
             </>
           )}
         </fieldset>
+        {/*Renderizado de tipo de gradient y la inclinacion del gradient*/}
         <fieldset
           className={dotStyle.fieldsets}
           style={{
             transition: "opacity 0.3s ease",
             ...(typeGradient === "middle"
-              ? { opacity: "0" }
-              : { opacity: "1" }),
+              ? { display: "none" }
+              : { display: "flex" }),
           }}
         >
           <legend className={dotStyle.legend}>Type of gradient</legend>
           <div className={dotStyle.divColors}>
-            <div className={dotStyle.button}>
-              <p
-                className={dotStyle.p}
-                onClick={() => {
-                  setTypeGradient("left");
-                  setGradientType("linear");
-                }}
-              >
-                Linear
-              </p>
-              <div
-                className={dotStyle.buttonSlack}
-                style={{
-                  transition: " all 0.5s cubic-bezier(0.25, 1.3, 0.5, 1)",
-                  ...(typeGradient === "middle"
-                    ? { transform: "translateX(0px)" }
-                    : typeGradient === "right"
-                      ? { transform: "translateX(62px) rotate(90deg)" }
-                      : { transform: "translateX(-45px)" }),
-                }}
-              ></div>
-              <p
-                className={dotStyle.p}
-                onClick={() => {
-                  setTypeGradient("right");
-                  setGradientType("radial");
-                }}
-              >
-                Radial
-              </p>
-            </div>
+            <p className={dotStyle.p}>Linear</p>
+            <Toggle
+              value={valueGradient}
+              onChangeValue={handleTypeGradientToggle}
+            />
+            <p className={dotStyle.p}>Radial</p>
           </div>
+          {/*Calcular el valor del slider*/}
           <div className={dotStyle.divRotationGrad}>
             <span
               style={{
@@ -207,17 +198,18 @@ function Dots() {
                 left: `calc(${percent}%)`,
               }}
             >
-              {rotation} deg
+              {Math.round(degree)} deg
             </span>
             <input
-              value={rotation}
+              value={rotation * (180 / Math.PI)}
               min={0}
               max={360}
               type="range"
               className="divInput"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const numberRotation = Number(e.target.value);
-                setRotation(numberRotation);
+                const degrees = numberRotation * (Math.PI / 180);
+                setRotation(degrees);
               }}
             />
           </div>
