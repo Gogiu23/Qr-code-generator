@@ -6,6 +6,7 @@ import React, { memo, useEffect, useState } from "react";
 import dotStyle from "./Dots.module.css";
 import { useGlobalContext } from "@/context/GlobalContext";
 import { Toggle } from "../ui/ToggleSwitch";
+import { RangeSlider } from "../ui/RangeSlider";
 
 function Dots() {
   const [position, setPosition] = useState<string>("left");
@@ -114,7 +115,10 @@ function Dots() {
         className={`${styles.content} ${isOpen ? styles.open : styles.close}`}
       >
         {/*Aqui empieza el contenido dentro de la tarjeta*/}
-        <fieldset className={dotStyle.fieldsets}>
+        <fieldset
+          className={dotStyle.fieldsets}
+          style={{ paddingBottom: "25px" }}
+        >
           <legend className={dotStyle.legend}>Dots shape</legend>
           <select
             name="type"
@@ -148,26 +152,32 @@ function Dots() {
         >
           <legend className={dotStyle.legend}>Colors preferences</legend>
           {position === "left" ? (
-            <input
-              className={dotStyle.input}
-              type="color"
-              onChange={(e) => handlePick(e, "middle")}
-              style={{ background: hex.color1 }}
-            />
-          ) : (
-            <>
+            <div className={dotStyle.divInput}>
               <input
                 className={dotStyle.input}
                 type="color"
-                onChange={(e) => handlePick(e, "left")}
+                onChange={(e) => handlePick(e, "middle")}
                 style={{ background: hex.color1 }}
               />
-              <input
-                className={dotStyle.input}
-                type="color"
-                onChange={(e) => handlePick(e, "right")}
-                style={{ background: hex.color2 }}
-              />
+            </div>
+          ) : (
+            <>
+              <div className={dotStyle.divInput}>
+                <input
+                  className={dotStyle.input}
+                  type="color"
+                  onChange={(e) => handlePick(e, "left")}
+                  style={{ background: hex.color1 }}
+                />
+              </div>
+              <div className={dotStyle.divInput}>
+                <input
+                  className={dotStyle.input}
+                  type="color"
+                  onChange={(e) => handlePick(e, "right")}
+                  style={{ background: hex.color2 }}
+                />
+              </div>
             </>
           )}
         </fieldset>
@@ -182,36 +192,48 @@ function Dots() {
           }}
         >
           <legend className={dotStyle.legend}>Type of gradient</legend>
-          <div className={dotStyle.divColors}>
-            <p className={dotStyle.p}>Linear</p>
-            <Toggle
-              value={valueGradient}
-              onChangeValue={handleTypeGradientToggle}
-            />
-            <p className={dotStyle.p}>Radial</p>
-          </div>
-          {/*Calcular el valor del slider*/}
-          <div className={dotStyle.divRotationGrad}>
-            <span
-              style={{
-                top: "1%",
-                left: `calc(${percent}%)`,
-              }}
-            >
-              {Math.round(degree)} deg
-            </span>
-            <input
-              value={rotation * (180 / Math.PI)}
-              min={0}
-              max={360}
-              type="range"
-              className="divInput"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const numberRotation = Number(e.target.value);
-                const degrees = numberRotation * (Math.PI / 180);
-                setRotation(degrees);
-              }}
-            />
+          <div className={dotStyle.divGradient}>
+            <div className={dotStyle.divColors}>
+              <p className={dotStyle.p}>Linear</p>
+              <Toggle
+                value={valueGradient}
+                onChangeValue={handleTypeGradientToggle}
+              />
+              <p className={dotStyle.p}>Radial</p>
+              {/*Calcular el valor del slider*/}
+            </div>
+            <div className={dotStyle.divColors}>
+              <p className={dotStyle.p} style={{ fontSize: "1.5rem" }}>
+                0 deg
+              </p>
+              {/* <div className={dotStyle.divRotationGrad}> */}
+              <RangeSlider min={0} max={360} />
+              {/* <span */}
+              {/*   style={{ */}
+              {/*     top: "-2%", */}
+              {/*     left: `calc(${percent}% - 20px)`, */}
+              {/*   }} */}
+              {/* > */}
+              {/*   {Math.round(degree)} deg */}
+              {/* </span> */}
+              {/**/}
+              {/* <input */}
+              {/*   value={rotation * (180 / Math.PI)} */}
+              {/*   min={0} */}
+              {/*   max={360} */}
+              {/*   type="range" */}
+              {/*   className="divInput" */}
+              {/*   onChange={(e: React.ChangeEvent<HTMLInputElement>) => { */}
+              {/*     const numberRotation = Number(e.target.value); */}
+              {/*     const degrees = numberRotation * (Math.PI / 180); */}
+              {/*     setRotation(degrees); */}
+              {/*   }} */}
+              {/* /> */}
+              {/* </div> */}
+              <p className={dotStyle.p} style={{ fontSize: "1.5rem" }}>
+                360 deg
+              </p>
+            </div>
           </div>
         </fieldset>
       </div>
