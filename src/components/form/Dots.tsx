@@ -6,7 +6,7 @@ import React, { memo, useEffect, useState } from "react";
 import dotStyle from "./Dots.module.css";
 import { useGlobalContext } from "@/context/GlobalContext";
 import { Toggle } from "../ui/ToggleSwitch";
-import { RangeSlider } from "../ui/RangeSlider";
+import RangeSlider from "../ui/RangeSlider";
 
 function Dots() {
   const [position, setPosition] = useState<string>("left");
@@ -14,15 +14,8 @@ function Dots() {
   const [value, setValue] = useState("left");
   const [valueGradient, setValueGradient] = useState("left");
   const [typeGradient, setTypeGradient] = useState<string>("middle");
-  const {
-    hex,
-    setHex,
-    setGradient,
-    setTypeDot,
-    setGradientType,
-    rotation,
-    setRotation,
-  } = useGlobalContext();
+  const { hex, setHex, setGradient, setTypeDot, setGradientType, setRotation } =
+    useGlobalContext();
 
   // funcion para detectar el tipo de color escogido
   const handlePick = (
@@ -90,12 +83,6 @@ function Dots() {
   const handleTypeGradientToggle = (Value: string) => {
     setValueGradient(Value);
   };
-
-  //Valores para poder determinar la posicion del span sobre el inpute range
-  const min = 0;
-  const max = 360;
-  const degree = rotation * (180 / Math.PI);
-  const percent = ((degree - min) / (max - min)) * 100;
 
   return (
     <div className={styles.bookDiv}>
@@ -206,30 +193,16 @@ function Dots() {
               <p className={dotStyle.p} style={{ fontSize: "1.5rem" }}>
                 0 deg
               </p>
-              {/* <div className={dotStyle.divRotationGrad}> */}
-              <RangeSlider min={0} max={360} />
-              {/* <span */}
-              {/*   style={{ */}
-              {/*     top: "-2%", */}
-              {/*     left: `calc(${percent}% - 20px)`, */}
-              {/*   }} */}
-              {/* > */}
-              {/*   {Math.round(degree)} deg */}
-              {/* </span> */}
-              {/**/}
-              {/* <input */}
-              {/*   value={rotation * (180 / Math.PI)} */}
-              {/*   min={0} */}
-              {/*   max={360} */}
-              {/*   type="range" */}
-              {/*   className="divInput" */}
-              {/*   onChange={(e: React.ChangeEvent<HTMLInputElement>) => { */}
-              {/*     const numberRotation = Number(e.target.value); */}
-              {/*     const degrees = numberRotation * (Math.PI / 180); */}
-              {/*     setRotation(degrees); */}
-              {/*   }} */}
-              {/* /> */}
-              {/* </div> */}
+              <RangeSlider
+                min={0}
+                max={360}
+                initialValue={90}
+                onChangeValue={(Value: string) => {
+                  const numberRotation = Number(Value);
+                  const degrees = numberRotation * (Math.PI / 180);
+                  setRotation(degrees);
+                }}
+              />
               <p className={dotStyle.p} style={{ fontSize: "1.5rem" }}>
                 360 deg
               </p>

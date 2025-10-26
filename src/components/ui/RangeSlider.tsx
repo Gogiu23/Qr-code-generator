@@ -1,22 +1,28 @@
 "use client";
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, memo } from "react";
 import RangeStyle from "./RangeSlider.module.css"; // Asume que el CSS está en este archivo
 
 interface RangeSliderProps {
   min: number;
   max: number;
   initialValue?: number;
+  onChangeValue: (newValue: string) => void;
 }
 
 // El número mágico de desplazamiento del thumb
 const THUMB_OFFSET = 14;
 
-export function RangeSlider({ min, max, initialValue = 0 }: RangeSliderProps) {
+function RangeSlider({
+  min,
+  max,
+  initialValue = 0,
+  onChangeValue,
+}: RangeSliderProps) {
   // Estado para el valor del slider
   const [value, setValue] = useState(initialValue);
 
   // Referencia para el elemento DOM de la burbuja
-  const bubbleRef = useRef<HTMLOutputElement>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
 
   // Referencia para el elemento DOM del input de rango
   const rangeRef = useRef<HTMLInputElement>(null);
@@ -43,9 +49,6 @@ export function RangeSlider({ min, max, initialValue = 0 }: RangeSliderProps) {
     // Calcular el porcentaje
     const offset = calculateBubblePosition(value, min, max);
 
-    // 1. Mostrar el valor actual
-    bubble.textContent = String(value);
-
     // 2. Aplicar el desplazamiento CSS (misma lógica que la función setBubble)
     bubble.style.left = `calc(${offset}% - ${THUMB_OFFSET}px)`;
   }, [value, min, max]);
@@ -55,7 +58,7 @@ export function RangeSlider({ min, max, initialValue = 0 }: RangeSliderProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(e.target.value);
     setValue(newValue);
-    // El useEffect se encargará de llamar a setBubble (actualizar posición/texto)
+    onChangeValue(e.target.value);
   };
 
   return (
@@ -65,15 +68,18 @@ export function RangeSlider({ min, max, initialValue = 0 }: RangeSliderProps) {
         className={RangeStyle.range}
         min={min}
         max={max}
-        value={value}
+        // value={value}
         onChange={handleInputChange}
         ref={rangeRef} // Conecta la referencia al input
       />
       {/* Conecta la referencia a la burbuja */}
-      <output className={RangeStyle.bubble} ref={bubbleRef}></output>
+      <div className={RangeStyle.bubble} ref={bubbleRef}>
+        {value}
+      </div>
     </div>
   );
 }
 
+export default memo(RangeSlider);
 // Uso en otro componente:
 // <RangeSlider min={-20} max={20} initialValue={5} />
