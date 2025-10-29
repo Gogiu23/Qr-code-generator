@@ -102,11 +102,8 @@ function Dots() {
         className={`${styles.content} ${isOpen ? styles.open : styles.close}`}
       >
         {/*Aqui empieza el contenido dentro de la tarjeta*/}
-        <fieldset
-          className={dotStyle.fieldsets}
-          style={{ paddingBottom: "25px" }}
-        >
-          <legend className={dotStyle.legend}>Dots shape</legend>
+        <fieldset style={{ paddingBottom: "25px" }}>
+          <legend>Dots shape</legend>
           <select
             name="type"
             id="type id"
@@ -121,8 +118,8 @@ function Dots() {
             <option value="extra-rounded">Extra rounded</option>
           </select>
         </fieldset>
-        <fieldset className={dotStyle.fieldsets}>
-          <legend className={dotStyle.legend}>Color Dots</legend>
+        <fieldset>
+          <legend>Color Dots</legend>
           <div className={dotStyle.divColors}>
             <p className={dotStyle.p}>1 Color</p>
             <Toggle value={value} onChangeValue={handleChangeToogleGradient} />
@@ -131,13 +128,12 @@ function Dots() {
         </fieldset>
         {/*Renderiza solo si position este en left o right*/}
         <fieldset
-          className={dotStyle.fieldsets}
           style={{
             transition: "opacity 0.3s ease",
             ...(position === "middle" ? { opacity: "0" } : { opacity: "1" }),
           }}
         >
-          <legend className={dotStyle.legend}>Colors preferences</legend>
+          <legend>Colors preferences</legend>
           {position === "left" ? (
             <div className={dotStyle.divInput}>
               <input
@@ -170,7 +166,6 @@ function Dots() {
         </fieldset>
         {/*Renderizado de tipo de gradient y la inclinacion del gradient*/}
         <fieldset
-          className={dotStyle.fieldsets}
           style={{
             transition: "opacity 0.3s ease",
             ...(typeGradient === "middle"
@@ -178,7 +173,7 @@ function Dots() {
               : { display: "flex" }),
           }}
         >
-          <legend className={dotStyle.legend}>Type of gradient</legend>
+          <legend>Type of gradient</legend>
           <div className={dotStyle.divGradient}>
             <div className={dotStyle.divColors}>
               <p className={dotStyle.p}>Linear</p>

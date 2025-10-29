@@ -5,20 +5,28 @@ import styles from "./Data.module.css";
 import dotStyle from "./Dots.module.css";
 import { memo, useState } from "react";
 import { useGlobalContext } from "@/context/GlobalContext";
+import { Toggle } from "../ui/ToggleSwitch";
 
 function Corner() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { setCornerType, setCornerSquareType } = useGlobalContext();
+  const [gradient, setGradient] = useState("left");
 
   const handleOpenClick = () => {
     setIsOpen((prev) => !prev);
   };
 
+  //Detectamos el tipo de diseño de los puntos en las esquinas
   const handleCornerType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCornerType(e.target.value as CornerDotType);
   };
+  //Detectamos el tipo de diseño en los cuadrado en las esquinas
   const handleCornerTypeSquare = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCornerSquareType(e.target.value as CornerSquareType);
+  };
+  //Detectamos si es un color linear o gradiente
+  const handleGradient = (value: string) => {
+    setGradient(value);
   };
   return (
     <div className={styles.bookDiv}>
@@ -37,8 +45,8 @@ function Corner() {
         className={`${styles.content} ${isOpen ? styles.open : styles.close}`}
       >
         {/* Empieza aqui el contenido dentro de los puntos*/}
-        <fieldset className={dotStyle.fieldsets}>
-          <legend className={dotStyle.legend}>Corner Shape Dots</legend>
+        <fieldset style={{ flexDirection: "column" }}>
+          <legend>Corner Shape Dots</legend>
           <select
             name="type"
             id="type id"
@@ -54,10 +62,33 @@ function Corner() {
             <option value="extra-rounded">Extra-rounded</option>
             <option value="classy-rounded">Classy-rounded</option>
           </select>
+          <div className={styles.generalDiv}>
+            <p>Linear</p>
+            <Toggle value={gradient} onChangeValue={handleGradient} />
+            <p>Gradient</p>
+          </div>
+          <div>
+            {gradient === "left" ? (
+              <>
+                <input type="color" defaultValue="#317AC2" />
+              </>
+            ) : (
+              <>
+                <input type="color" defaultValue="#317AC2" />
+                <input type="color" defaultValue="#f2502d" />
+              </>
+            )}
+          </div>
+          <div>
+            <h1>linear o radial gradient</h1>
+          </div>
+          <div>
+            <h1>valor del gradiente (angulo)</h1>
+          </div>
         </fieldset>
         {/* segundo contenido de las esquinas */}
-        <fieldset className={dotStyle.fieldsets}>
-          <legend className={dotStyle.legend}>Corner Shape Square</legend>
+        <fieldset>
+          <legend>Corner Shape Square</legend>
           <select
             name="type"
             id="type id"
