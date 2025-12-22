@@ -6,6 +6,7 @@ import Image from "next/image";
 import QRCodeStyling, { FileExtension, Gradient } from "qr-code-styling";
 import { useGlobalContext } from "@/context/GlobalContext";
 import Button from "./ui/Button";
+import { useGlobalCornerContext } from "@/context/GlobalCornersFunctions";
 
 // ✅ Carga dinámica (por si lo importan en otro lado)
 const QrCodeClient = ({
@@ -22,15 +23,9 @@ const QrCodeClient = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
   const [start, setStart] = useState<boolean>(true);
-  const {
-    hex,
-    gradient,
-    typeDot,
-    gradientType,
-    rotation,
-    cornerType,
-    cornerSquare,
-  } = useGlobalContext();
+  const { cornerType, cornerSquare, hexDots, hexSquare, gradientDots } =
+    useGlobalCornerContext();
+  const { hex, gradient, typeDot, gradientType, rotation } = useGlobalContext();
   const [fileExt, setFileExt] = useState<FileExtension>("png");
 
   useEffect(() => {
@@ -59,6 +54,7 @@ const QrCodeClient = ({
     });
   }, []); // Solo al montar
 
+  //detectar si hay gradient y en caso aplicarlo
   const gradientOptions = useMemo(() => {
     if (!gradient.gradient) {
       return { gradient: undefined };
@@ -81,6 +77,37 @@ const QrCodeClient = ({
     };
   }, [gradient.gradient, gradientType, rotation, hex.color1, hex.color2]);
 
+  const gradientCornersOptions = useMemo(() => {
+    return {
+      // Definimos la estructura exacta para los puntos de la esquina
+      dotOptions: gradientDots.gradientDots
+        ? {
+            gradient: {
+              type: "linear" as const,
+              rotation: 0,
+              colorStops: [
+                { offset: 0, color: hexDots.color1 },
+                { offset: 1, color: hexDots.color2 },
+              ],
+            } satisfies Gradient,
+          }
+        : { gradient: undefined },
+
+      // Definimos la estructura para el marco de la esquina
+      squareOptions: gradientDots.gradientSquare
+        ? {
+            gradient: {
+              type: "linear" as const,
+              rotation: 0,
+              colorStops: [
+                { offset: 0, color: hexSquare.color1 },
+                { offset: 1, color: hexSquare.color2 },
+              ],
+            },
+          }
+        : { gradient: undefined },
+    };
+  }, [gradientDots, hexSquare, hexDots]);
   // Actualiza cada vez que cambien los props
   useEffect(() => {
     // console.log(gradientType);
@@ -95,11 +122,15 @@ const QrCodeClient = ({
           color: hex.color1,
           ...gradientOptions,
         },
-        cornersSquareOptions: {
-          type: cornerSquare,
-        },
         cornersDotOptions: {
           type: cornerType,
+          color: hexDots.color1,
+          ...gradientCornersOptions.dotOptions,
+        },
+        cornersSquareOptions: {
+          type: cornerSquare,
+          color: hexSquare.color1,
+          ...gradientCornersOptions.squareOptions,
         },
       });
       setStart(!(url && url.length > 0));
@@ -113,8 +144,11 @@ const QrCodeClient = ({
     qrCode,
     typeDot,
     gradientOptions,
+    gradientCornersOptions,
     cornerType,
     cornerSquare,
+    hexDots,
+    hexSquare,
   ]);
 
   const handleDownload = () => {

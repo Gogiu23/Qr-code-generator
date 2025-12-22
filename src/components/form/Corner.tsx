@@ -3,14 +3,21 @@ import Image from "next/image";
 import { CornerDotType, CornerSquareType } from "qr-code-styling";
 import styles from "./Data.module.css";
 import dotStyle from "./Dots.module.css";
-import { memo, useState } from "react";
-import { useGlobalContext } from "@/context/GlobalContext";
+import { memo, useEffect, useState } from "react";
 import { Toggle } from "../ui/ToggleSwitch";
+import { useGlobalCornerContext } from "@/context/GlobalCornersFunctions";
 
 function Corner() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { setCornerType, setCornerSquareType } = useGlobalContext();
-  const [gradient, setGradient] = useState("left");
+  const {
+    setCornerType,
+    setCornerSquareType,
+    setHexDots,
+    setHexSquare,
+    setGradientDots,
+  } = useGlobalCornerContext();
+  const [gradient, setGradient] = useState<string>("left");
+  const [gradientSquare, setGradientSquare] = useState<string>("left");
 
   const handleOpenClick = () => {
     setIsOpen((prev) => !prev);
@@ -28,6 +35,93 @@ function Corner() {
   const handleGradient = (value: string) => {
     setGradient(value);
   };
+
+  const handleGradientSquare = (value: string) => {
+    setGradientSquare(value);
+  };
+
+  //Funcion para detectar el color elegido por el usuario en los puntos
+  const handleColor = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+  ) => {
+    if (value === "left") {
+      setHexDots((prev) => ({
+        ...prev,
+        color1: e.target.value,
+      }));
+    } else if (value === "first") {
+      //asignamos true para gradient
+      setGradientDots((prev) => ({
+        ...prev,
+        gradientDots: true,
+      }));
+      setHexDots((prev) => ({
+        ...prev,
+        color1: e.target.value,
+      }));
+    } else {
+      setHexDots((prev) => ({
+        ...prev,
+        color2: e.target.value,
+      }));
+    }
+  };
+  //cambio de color en los cuadrados externos alrededor
+  const handleColorSquare = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+  ) => {
+    if (value === "left") {
+      setHexSquare((prev) => ({
+        ...prev,
+        color1: e.target.value,
+      }));
+    } else if (value === "first") {
+      //gradient square true
+      setHexSquare((prev) => ({
+        ...prev,
+        color1: e.target.value,
+      }));
+    } else {
+      setHexSquare((prev) => ({
+        ...prev,
+        color2: e.target.value,
+      }));
+    }
+  };
+
+  //cambio de boolean si se activa el gradient o no
+  useEffect(() => {
+    if (gradientSquare === "left") {
+      //gradient square false
+      setGradientDots((prev) => ({
+        ...prev,
+        gradientSquare: false,
+      }));
+      console.log("gradient square false");
+    } else {
+      //gradient square false
+      setGradientDots((prev) => ({
+        ...prev,
+        gradientSquare: true,
+      }));
+      console.log("gradient square true");
+    }
+    if (gradient === "left") {
+      //gradient false
+      setGradientDots((prev) => ({
+        ...prev,
+        gradientDots: false,
+      }));
+    } else {
+      setGradientDots((prev) => ({
+        ...prev,
+        gradientDots: true,
+      }));
+    }
+  }, [gradientSquare, gradient]);
+
   return (
     <div className={styles.bookDiv}>
       <div className={styles.bookTitle} onClick={() => handleOpenClick()}>
@@ -70,12 +164,24 @@ function Corner() {
           <div>
             {gradient === "left" ? (
               <>
-                <input type="color" defaultValue="#317AC2" />
+                <input
+                  type="color"
+                  defaultValue="#317AC2"
+                  onChange={(e) => handleColor(e, "left")}
+                />
               </>
             ) : (
               <>
-                <input type="color" defaultValue="#317AC2" />
-                <input type="color" defaultValue="#f2502d" />
+                <input
+                  type="color"
+                  defaultValue="#317AC2"
+                  onChange={(e) => handleColor(e, "first")}
+                />
+                <input
+                  type="color"
+                  defaultValue="#f2502d"
+                  onChange={(e) => handleColor(e, "second")}
+                />
               </>
             )}
           </div>
@@ -87,7 +193,7 @@ function Corner() {
           </div>
         </fieldset>
         {/* segundo contenido de las esquinas */}
-        <fieldset>
+        <fieldset style={{ flexDirection: "column" }}>
           <legend>Corner Shape Square</legend>
           <select
             name="type"
@@ -104,6 +210,38 @@ function Corner() {
             <option value="extra-rounded">Extra-rounded</option>
             <option value="classy-rounded">Classy-rounded</option>
           </select>
+          <div className={styles.generalDiv}>
+            <p>Linear</p>
+            <Toggle
+              value={gradientSquare}
+              onChangeValue={handleGradientSquare}
+            />
+            <p>Gradient</p>
+          </div>
+          <div>
+            {gradientSquare === "left" ? (
+              <>
+                <input
+                  type="color"
+                  defaultValue="#317AC2"
+                  onChange={(e) => handleColorSquare(e, "left")}
+                />
+              </>
+            ) : (
+              <>
+                <input
+                  type="color"
+                  defaultValue="#317AC2"
+                  onChange={(e) => handleColorSquare(e, "first")}
+                />
+                <input
+                  type="color"
+                  defaultValue="#f2502d"
+                  onChange={(e) => handleColorSquare(e, "second")}
+                />
+              </>
+            )}
+          </div>
         </fieldset>
       </div>
     </div>
