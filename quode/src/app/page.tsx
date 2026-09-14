@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   account,
   tablesDB,
@@ -8,11 +8,16 @@ import {
 } from "@/lib/appwriteClient";
 import { Models, Query, ID, Permission, Role } from "appwrite";
 import { useQRCode, QR_BG_RADIUS } from "@/hooks/useQRCode";
+import { buildQRContent } from "@/lib/qrContent";
 import {
   QROptions,
   DotStyle,
   CornerSquareStyle,
   BgShape,
+  ContentType,
+  ContentFields,
+  WifiEncryption,
+  ExtensionType,
   QRDesignRecord,
   AppwriteQRRow,
 } from "@/types/qr";
@@ -27,19 +32,78 @@ import {
   Image as ImageIcon,
   Sparkles,
   Sliders,
+  Link2,
+  Type,
+  Phone,
+  Mail,
+  Wifi,
+  ChevronDown,
 } from "lucide-react";
+import { useLocale } from "@/lib/i18n/LocaleContext";
+import { getUi } from "@/lib/i18n/ui";
+
+const CONTENT_TYPE_ICONS: Record<ContentType, typeof Link2> = {
+  url: Link2,
+  text: Type,
+  phone: Phone,
+  email: Mail,
+  wifi: Wifi,
+};
+
+const CONTENT_TYPES: ContentType[] = ["url", "text", "phone", "email", "wifi"];
+
+const DOWNLOAD_FORMATS: ExtensionType[] = ["png", "svg", "pdf", "jpeg"];
 
 export default function Home() {
+  const { locale } = useLocale();
+  const t = getUi(locale);
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
     null,
   );
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [savedModalOpen, setSavedModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"content" | "style">("content");
+  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  const downloadMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!downloadMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        downloadMenuRef.current &&
+        !downloadMenuRef.current.contains(e.target as Node)
+      ) {
+        setDownloadMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [downloadMenuOpen]);
 
   // Estado del QR
-  const [title, setTitle] = useState("Mi QR");
-  const [content, setContent] = useState("https://mi-enlace.com");
+  const [titleOverride, setTitleOverride] = useState<string | null>(null);
+  const title = titleOverride ?? t.home.defaultTitle;
+  const setTitle = (value: string) => setTitleOverride(value);
+  const [contentType, setContentType] = useState<ContentType>("url");
+  const [contentFields, setContentFields] = useState<ContentFields>({
+    url: "https://mi-enlace.com",
+    text: "",
+    phone: "",
+    email: "",
+    wifiSsid: "",
+    wifiPassword: "",
+    wifiEncryption: "WPA",
+  });
+  const setContentField = <K extends keyof ContentFields>(
+    key: K,
+    value: ContentFields[K],
+  ) => {
+    setContentFields((prev) => ({ ...prev, [key]: value }));
+  };
+  const content = useMemo(
+    () => buildQRContent(contentType, contentFields),
+    [contentType, contentFields],
+  );
   const [currentId, setCurrentId] = useState<string | null>(null);
   const [savedDesigns, setSavedDesigns] = useState<QRDesignRecord[]>([]);
   const [saveMessage, setSaveMessage] = useState<{
@@ -53,10 +117,12 @@ export default function Home() {
     bgColor: "#FFFFFF",
     bgColor2: "#95E1D3",
     bgGradient: false,
+    bgTransparent: false,
     dotStyle: "rounded",
     cornerSquareStyle: "extra-rounded",
     bgShape: "square",
     logoUrl: "",
+    logoSize: 0.4,
   });
 
   const { ref: qrRef, download } = useQRCode(content, options);
@@ -127,7 +193,7 @@ export default function Home() {
         });
         setSaveMessage({
           type: "success",
-          text: "¡Diseño actualizado exitosamente en Appwrite!",
+          text: t.home.messages.updateSuccess,
         });
       } else {
         const row = await tablesDB.createRow({
@@ -144,12 +210,15 @@ export default function Home() {
         setCurrentId(row.$id);
         setSaveMessage({
           type: "success",
-          text: "¡Diseño guardado en Appwrite Cloud!",
+          text: t.home.messages.saveSuccess,
         });
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      setSaveMessage({ type: "error", text: "Error al guardar: " + message });
+      setSaveMessage({
+        type: "error",
+        text: t.home.messages.saveErrorPrefix + message,
+      });
     } finally {
       setTimeout(() => setSaveMessage(null), 4000);
     }
@@ -183,10 +252,18 @@ export default function Home() {
         onLogout={handleLogout}
       />
 
-      <main className="flex-1 max-w-md mx-auto sm:max-w-5xl w-full px-4 pt-4 space-y-4">
+      <main className="flex-1 max-w-md mx-auto sm:max-w-5xl w-full px-4 pt-4 pb-4">
+        <div className="text-center mb-6 print:hidden">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
+            {t.home.heroTitle}
+          </h1>
+          <p className="text-sm text-[#333333]/70 mt-1 max-w-lg mx-auto">
+            {t.home.heroSubtitle}
+          </p>
+        </div>
         {saveMessage && (
           <div
-            className={`text-sm font-semibold px-4 py-2.5 rounded-xl print:hidden ${
+            className={`mb-4 text-sm font-semibold px-4 py-2.5 rounded-xl print:hidden ${
               saveMessage.type === "success"
                 ? "bg-green-100 text-green-800 border border-green-300"
                 : "bg-red-100 text-red-700 border border-red-300"
@@ -195,8 +272,12 @@ export default function Home() {
             {saveMessage.text}
           </div>
         )}
-        <div className="bg-white rounded-2xl p-5 shadow-lg border border-[#F38181]/15 flex flex-col items-center print:shadow-none print:border-none print:p-0">
+        <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[1fr_360px] lg:gap-5 lg:items-start">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#333333]/10 flex flex-col items-center print:shadow-none print:border-none print:p-0 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-4">
           <div className="text-center mb-3 print:hidden">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#333333]/40 mb-1">
+              {t.home.preview}
+            </p>
             <input
               type="text"
               value={title}
@@ -215,27 +296,46 @@ export default function Home() {
             />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full mt-4 print:hidden">
-            <button
-              onClick={() => download("png", title)}
-              className="flex items-center justify-center gap-1.5 bg-[#F38181] hover:bg-[#333333] text-white py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
-            >
-              <Download className="w-3.5 h-3.5 text-[#FCE38A]" />
-              Descargar
-            </button>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2 w-full mt-4 print:hidden">
+            <div className="relative" ref={downloadMenuRef}>
+              <button
+                onClick={() => setDownloadMenuOpen((v) => !v)}
+                className="w-full flex items-center justify-center gap-1.5 bg-[#F38181] hover:bg-[#333333] text-white py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5 text-[#FCE38A]" />
+                {t.home.download}
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              {downloadMenuOpen && (
+                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-white rounded-xl border border-[#333333]/10 shadow-lg overflow-hidden">
+                  {DOWNLOAD_FORMATS.map((ext) => (
+                    <button
+                      key={ext}
+                      onClick={() => {
+                        download(ext, title);
+                        setDownloadMenuOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-[#333333] hover:bg-[#EAFFD0] transition"
+                    >
+                      {ext.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button
               onClick={handlePrint}
               className="flex items-center justify-center gap-1.5 bg-[#333333] hover:bg-[#F38181] text-white py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
             >
               <Printer className="w-3.5 h-3.5 text-[#FCE38A]" />
-              Imprimir
+              {t.home.print}
             </button>
             <button
               onClick={handleSave}
               className="flex items-center justify-center gap-1.5 bg-[#FCE38A] hover:bg-[#FCE38A]/90 text-[#333333] py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />
-              Guardar
+              {t.home.save}
             </button>
             <button
               onClick={() => {
@@ -248,12 +348,15 @@ export default function Home() {
               className="flex items-center justify-center gap-1.5 bg-white border border-[#95E1D3] text-[#333333] hover:bg-[#95E1D3]/20 py-2 px-3 rounded-xl text-xs font-bold transition"
             >
               <FolderOpen className="w-3.5 h-3.5 text-[#95E1D3]" />
-              Mis QR
+              {t.home.myQr}
             </button>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-lg border border-[#F38181]/15 print:hidden">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#333333]/10 print:hidden lg:col-start-1 lg:row-start-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#333333]/40 mb-3">
+            {t.home.personalize}
+          </p>
           <div className="flex border-b border-[#F38181]/15 mb-4">
             <button
               onClick={() => setActiveTab("content")}
@@ -264,7 +367,7 @@ export default function Home() {
               }`}
             >
               <Sparkles className="w-4 h-4" />
-              Contenido
+              {t.home.tabContent}
             </button>
             <button
               onClick={() => setActiveTab("style")}
@@ -275,32 +378,162 @@ export default function Home() {
               }`}
             >
               <Sliders className="w-4 h-4" />
-              Personalización
+              {t.home.tabStyle}
             </button>
           </div>
 
           {activeTab === "content" && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#333333] mb-1">
-                  URL o Texto del QR
+                <label className="block text-xs font-bold text-[#333333] mb-2">
+                  {t.home.contentTypeLabel}
                 </label>
-                <input
-                  type="text"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="https://tu-sitio-web.com"
-                  className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
-                />
+                <div className="flex flex-wrap gap-2">
+                  {CONTENT_TYPES.map((type) => {
+                    const Icon = CONTENT_TYPE_ICONS[type];
+                    return (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setContentType(type)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition ${
+                          contentType === type
+                            ? "bg-[#F38181] text-white border-[#F38181]"
+                            : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        {t.home.types[type]}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+
+              {contentType === "url" && (
+                <div>
+                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                    {t.home.fields.url}
+                  </label>
+                  <input
+                    type="url"
+                    value={contentFields.url}
+                    onChange={(e) => setContentField("url", e.target.value)}
+                    placeholder={t.home.fields.urlPlaceholder}
+                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                  />
+                </div>
+              )}
+
+              {contentType === "text" && (
+                <div>
+                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                    {t.home.fields.text}
+                  </label>
+                  <textarea
+                    value={contentFields.text}
+                    onChange={(e) => setContentField("text", e.target.value)}
+                    placeholder={t.home.fields.textPlaceholder}
+                    rows={3}
+                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333] resize-none"
+                  />
+                </div>
+              )}
+
+              {contentType === "phone" && (
+                <div>
+                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                    {t.home.fields.phone}
+                  </label>
+                  <input
+                    type="tel"
+                    value={contentFields.phone}
+                    onChange={(e) => setContentField("phone", e.target.value)}
+                    placeholder={t.home.fields.phonePlaceholder}
+                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                  />
+                </div>
+              )}
+
+              {contentType === "email" && (
+                <div>
+                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                    {t.home.fields.email}
+                  </label>
+                  <input
+                    type="email"
+                    value={contentFields.email}
+                    onChange={(e) => setContentField("email", e.target.value)}
+                    placeholder={t.home.fields.emailPlaceholder}
+                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                  />
+                </div>
+              )}
+
+              {contentType === "wifi" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-[#333333] mb-1">
+                      {t.home.fields.ssid}
+                    </label>
+                    <input
+                      type="text"
+                      value={contentFields.wifiSsid}
+                      onChange={(e) => setContentField("wifiSsid", e.target.value)}
+                      placeholder={t.home.fields.ssidPlaceholder}
+                      className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#333333] mb-1">
+                      {t.home.fields.security}
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["WPA", "WEP", "nopass"] as WifiEncryption[]).map(
+                        (enc) => (
+                          <button
+                            key={enc}
+                            type="button"
+                            onClick={() => setContentField("wifiEncryption", enc)}
+                            className={`p-2 text-xs rounded-xl border font-semibold transition ${
+                              contentFields.wifiEncryption === enc
+                                ? "bg-[#F38181] text-white border-[#F38181]"
+                                : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
+                            }`}
+                          >
+                            {enc === "nopass" ? t.home.fields.none : enc}
+                          </button>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                  {contentFields.wifiEncryption !== "nopass" && (
+                    <div>
+                      <label className="block text-xs font-bold text-[#333333] mb-1">
+                        {t.home.fields.password}
+                      </label>
+                      <input
+                        type="text"
+                        value={contentFields.wifiPassword}
+                        onChange={(e) =>
+                          setContentField("wifiPassword", e.target.value)
+                        }
+                        placeholder={t.home.fields.passwordPlaceholder}
+                        className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div>
                 <label className="block text-xs font-bold text-[#333333] mb-1">
-                  Logo Central (Opcional)
+                  {t.home.fields.logo}
                 </label>
                 <div className="flex items-center gap-2">
                   <label className="flex-1 flex items-center justify-center gap-2 border border-dashed border-[#F38181]/40 bg-[#EAFFD0] hover:bg-[#D9FFC0] p-3 rounded-xl cursor-pointer text-xs font-semibold text-[#F38181] transition">
                     <ImageIcon className="w-4 h-4" />
-                    Subir Imagen
+                    {t.home.fields.uploadImage}
                     <input
                       type="file"
                       accept="image/*"
@@ -315,10 +548,36 @@ export default function Home() {
                       }
                       className="text-xs text-red-600 underline font-semibold px-2"
                     >
-                      Quitar
+                      {t.home.fields.remove}
                     </button>
                   )}
                 </div>
+                {options.logoUrl && (
+                  <div className="mt-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-bold text-[#333333]">
+                        {t.home.fields.logoSize}
+                      </label>
+                      <span className="text-xs font-mono font-bold text-[#333333]">
+                        {Math.round((options.logoSize ?? 0.4) * 100)}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0.1}
+                      max={0.6}
+                      step={0.05}
+                      value={options.logoSize ?? 0.4}
+                      onChange={(e) =>
+                        setOptions((prev) => ({
+                          ...prev,
+                          logoSize: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full accent-[#F38181] cursor-pointer"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -328,7 +587,7 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-[#333333] mb-1">
-                    Color Puntos
+                    {t.home.style.dotsColor}
                   </label>
                   <div className="flex items-center gap-2">
                     <input
@@ -356,7 +615,7 @@ export default function Home() {
                       className="accent-[#F38181] w-3.5 h-3.5 cursor-pointer"
                     />
                     <span className="text-[11px] font-bold text-[#333333]">
-                      Degradado
+                      {t.home.style.gradient}
                     </span>
                   </label>
                   {options.dotsGradient && (
@@ -380,38 +639,65 @@ export default function Home() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-[#333333] mb-1">
-                    Color Fondo
+                    {t.home.style.bgColor}
                   </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={options.bgColor}
-                      onChange={(e) =>
-                        setOptions({ ...options, bgColor: e.target.value })
-                      }
-                      className="w-9 h-9 rounded-lg border-0 cursor-pointer"
-                    />
-                    <span className="text-xs font-mono font-bold text-[#333333]">
-                      {options.bgColor}
-                    </span>
+                  {!options.bgTransparent && (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={options.bgColor}
+                        onChange={(e) =>
+                          setOptions({ ...options, bgColor: e.target.value })
+                        }
+                        className="w-9 h-9 rounded-lg border-0 cursor-pointer"
+                      />
+                      <span className="text-xs font-mono font-bold text-[#333333]">
+                        {options.bgColor}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-4 mt-2">
+                    <label
+                      className={`flex items-center gap-1.5 select-none ${
+                        options.bgTransparent
+                          ? "opacity-40 cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={options.bgGradient}
+                        disabled={options.bgTransparent}
+                        onChange={(e) =>
+                          setOptions({
+                            ...options,
+                            bgGradient: e.target.checked,
+                          })
+                        }
+                        className="accent-[#F38181] w-3.5 h-3.5 cursor-pointer disabled:cursor-not-allowed"
+                      />
+                      <span className="text-[11px] font-bold text-[#333333]">
+                        {t.home.style.gradient}
+                      </span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={options.bgTransparent}
+                        onChange={(e) =>
+                          setOptions({
+                            ...options,
+                            bgTransparent: e.target.checked,
+                          })
+                        }
+                        className="accent-[#F38181] w-3.5 h-3.5 cursor-pointer"
+                      />
+                      <span className="text-[11px] font-bold text-[#333333]">
+                        {t.home.style.transparentBg}
+                      </span>
+                    </label>
                   </div>
-                  <label className="flex items-center gap-1.5 mt-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={options.bgGradient}
-                      onChange={(e) =>
-                        setOptions({
-                          ...options,
-                          bgGradient: e.target.checked,
-                        })
-                      }
-                      className="accent-[#F38181] w-3.5 h-3.5 cursor-pointer"
-                    />
-                    <span className="text-[11px] font-bold text-[#333333]">
-                      Degradado
-                    </span>
-                  </label>
-                  {options.bgGradient && (
+                  {options.bgGradient && !options.bgTransparent && (
                     <div className="flex items-center gap-2 mt-1.5">
                       <input
                         type="color"
@@ -431,7 +717,7 @@ export default function Home() {
 
               <div>
                 <label className="block text-xs font-bold text-[#333333] mb-1">
-                  Bordes del Fondo
+                  {t.home.style.bgShape}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {(["square", "rounded"] as BgShape[]).map((shape) => (
@@ -445,7 +731,7 @@ export default function Home() {
                           : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
                       }`}
                     >
-                      {shape === "square" ? "Cuadrado" : "Redondeado"}
+                      {shape === "square" ? t.home.style.square : t.home.style.rounded}
                     </button>
                   ))}
                 </div>
@@ -453,7 +739,7 @@ export default function Home() {
 
               <div>
                 <label className="block text-xs font-bold text-[#333333] mb-1">
-                  Estilo de Puntos
+                  {t.home.style.dotStyle}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(
@@ -485,7 +771,7 @@ export default function Home() {
 
               <div>
                 <label className="block text-xs font-bold text-[#333333] mb-1">
-                  Marco de Esquinas
+                  {t.home.style.cornerStyle}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(
@@ -511,6 +797,7 @@ export default function Home() {
             </div>
           )}
         </div>
+        </div>
       </main>
 
       <AuthModal
@@ -524,7 +811,8 @@ export default function Home() {
         designs={savedDesigns}
         onSelect={(design) => {
           setTitle(design.title);
-          setContent(design.content);
+          setContentType("text");
+          setContentField("text", design.content);
           setOptions(design.options);
           setCurrentId(design.$id || null);
         }}

@@ -66,6 +66,27 @@ async function downloadRoundedPng(blob: Blob, filename: string) {
   }, "image/png");
 }
 
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function downloadPdf(blob: Blob, filename: string, size: number) {
+  const { jsPDF } = await import("jspdf");
+  const dataUrl = await blobToDataUrl(blob);
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "px",
+    format: [size, size],
+  });
+  pdf.addImage(dataUrl, "PNG", 0, 0, size, size);
+  pdf.save(filename);
+}
+
 export function useQRCode(content: string, options: QROptions) {
   const ref = useRef<HTMLDivElement>(null);
   const qrRef = useRef<QRCodeStyling | null>(null);
@@ -93,8 +114,12 @@ export function useQRCode(content: string, options: QROptions) {
           gradient: dotsGradient,
         },
         backgroundOptions: {
-          color: bgGradient ? undefined : options.bgColor,
-          gradient: bgGradient,
+          color: options.bgTransparent
+            ? "transparent"
+            : bgGradient
+              ? undefined
+              : options.bgColor,
+          gradient: options.bgTransparent ? undefined : bgGradient,
         },
         cornersSquareOptions: {
           type: options.cornerSquareStyle,
@@ -108,6 +133,7 @@ export function useQRCode(content: string, options: QROptions) {
         imageOptions: {
           crossOrigin: "anonymous" as const,
           margin: 4,
+          imageSize: options.logoSize ?? 0.4,
         },
       };
     };
@@ -134,6 +160,14 @@ export function useQRCode(content: string, options: QROptions) {
   const download = async (extension: ExtensionType, name: string) => {
     const qr = qrRef.current;
     if (!qr) return;
+
+    if (extension === "pdf") {
+      const blob = await qr.getRawData("png");
+      if (blob instanceof Blob) {
+        await downloadPdf(blob, `${name}.pdf`, QR_SIZE);
+      }
+      return;
+    }
 
     if (options.bgShape === "rounded" && extension === "png") {
       const blob = await qr.getRawData("png");

@@ -3,6 +3,8 @@ import { useState } from "react";
 import { account } from "@/lib/appwriteClient";
 import { ID } from "appwrite";
 import { X, Mail, Lock, Loader2 } from "lucide-react";
+import { useLocale } from "@/lib/i18n/LocaleContext";
+import { getUi } from "@/lib/i18n/ui";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -20,6 +22,8 @@ export default function AuthModal({
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const { locale } = useLocale();
+  const t = getUi(locale);
 
   if (!isOpen) return null;
 
@@ -38,7 +42,7 @@ export default function AuthModal({
       onAuthSuccess();
       onClose();
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Error en la autenticación");
+      setErrorMsg(err instanceof Error ? err.message : t.auth.genericError);
     } finally {
       setLoading(false);
     }
@@ -49,7 +53,7 @@ export default function AuthModal({
       <div className="bg-[#EAFFD0] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl p-6 border border-[#F38181]/20 text-[#333333]">
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-xl font-bold text-[#333333]">
-            {isSignUp ? "Crear Cuenta" : "Iniciar Sesión"}
+            {isSignUp ? t.auth.createAccount : t.auth.login}
           </h2>
           <button
             onClick={onClose}
@@ -68,7 +72,7 @@ export default function AuthModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-[#333333] mb-1">
-              Correo Electrónico
+              {t.auth.email}
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 absolute left-3 top-3 text-[#F38181]/60" />
@@ -85,7 +89,7 @@ export default function AuthModal({
 
           <div>
             <label className="block text-xs font-semibold text-[#333333] mb-1">
-              Contraseña
+              {t.auth.password}
             </label>
             <div className="relative">
               <Lock className="w-4 h-4 absolute left-3 top-3 text-[#F38181]/60" />
@@ -106,18 +110,18 @@ export default function AuthModal({
             className="w-full bg-[#F38181] hover:bg-[#333333] text-white font-bold py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-md"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {isSignUp ? "Registrarse" : "Entrar"}
+            {isSignUp ? t.auth.submitSignUp : t.auth.submitLogin}
           </button>
         </form>
 
         <div className="mt-4 text-center text-xs text-[#333333]/80">
-          {isSignUp ? "¿Ya tienes cuenta?" : "¿No tienes cuenta?"}
+          {isSignUp ? t.auth.haveAccount : t.auth.noAccount}
           <button
             type="button"
             onClick={() => setIsSignUp(!isSignUp)}
             className="font-bold text-[#F38181] underline ml-1"
           >
-            {isSignUp ? "Inicia sesión" : "Regístrate gratis"}
+            {isSignUp ? t.auth.loginLink : t.auth.signupLink}
           </button>
         </div>
       </div>

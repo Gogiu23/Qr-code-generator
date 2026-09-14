@@ -1,6 +1,8 @@
 "use client";
 import { QRDesignRecord } from "@/types/qr";
 import { X, FolderOpen, Trash2, Edit3 } from "lucide-react";
+import { useLocale } from "@/lib/i18n/LocaleContext";
+import { getUi } from "@/lib/i18n/ui";
 
 interface SavedModalProps {
   isOpen: boolean;
@@ -17,6 +19,9 @@ export default function SavedModal({
   onSelect,
   onDelete,
 }: SavedModalProps) {
+  const { locale } = useLocale();
+  const t = getUi(locale);
+
   if (!isOpen) return null;
 
   return (
@@ -26,7 +31,7 @@ export default function SavedModal({
           <div className="flex items-center gap-2">
             <FolderOpen className="w-5 h-5 text-[#F38181]" />
             <h2 className="text-lg font-bold text-[#333333]">
-              Tus Códigos Guardados
+              {t.saved.title}
             </h2>
           </div>
           <button
@@ -39,7 +44,7 @@ export default function SavedModal({
 
         {designs.length === 0 ? (
           <div className="text-center py-8 text-sm text-[#333333]/70">
-            No tienes diseños guardados aún.
+            {t.saved.empty}
           </div>
         ) : (
           <div className="overflow-y-auto space-y-3 pr-1">
@@ -63,14 +68,14 @@ export default function SavedModal({
                       onClose();
                     }}
                     className="p-2 bg-[#F38181] text-white rounded-lg hover:bg-[#333333] transition"
-                    title="Cargar y Modificar"
+                    title={t.saved.loadTitle}
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => item.$id && onDelete(item.$id)}
                     className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
-                    title="Eliminar"
+                    title={t.saved.deleteTitle}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

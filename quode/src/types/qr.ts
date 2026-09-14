@@ -8,7 +8,20 @@ export type DotStyle =
   | "extra-rounded";
 export type CornerSquareStyle = "dot" | "square" | "extra-rounded";
 export type BgShape = "square" | "rounded";
-export type ExtensionType = "png" | "svg" | "webp";
+export type ExtensionType = "png" | "svg" | "jpeg" | "pdf";
+
+export type ContentType = "url" | "text" | "phone" | "email" | "wifi";
+export type WifiEncryption = "WPA" | "WEP" | "nopass";
+
+export interface ContentFields {
+  url: string;
+  text: string;
+  phone: string;
+  email: string;
+  wifiSsid: string;
+  wifiPassword: string;
+  wifiEncryption: WifiEncryption;
+}
 
 export interface QROptions {
   dotsColor: string;
@@ -17,10 +30,12 @@ export interface QROptions {
   bgColor: string;
   bgColor2: string;
   bgGradient: boolean;
+  bgTransparent: boolean;
   dotStyle: DotStyle;
   cornerSquareStyle: CornerSquareStyle;
   bgShape: BgShape;
   logoUrl?: string;
+  logoSize?: number;
 }
 
 export interface QRDesignRecord {

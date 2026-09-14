@@ -1,0 +1,3 @@
+# Reemplazá esta línea con la que te da la consola de AdSense
+# (Sites -> tu sitio -> "Ir a ads.txt"), tiene este formato:
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

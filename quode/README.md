@@ -31,10 +31,31 @@ La app usa la API nueva de Appwrite (**TablesDB**: Database → Table → Rows/C
 
 5. En la tabla, andá a **Settings → Row security** y activalo — la app otorga permisos de lectura/escritura por row al usuario dueño (`Permission.read/update/delete(Role.user(...))`) al guardar cada diseño, y sin Row security esos permisos se ignoran.
 
+## Monetización con Google AdSense
+
+El sitio está preparado para activar AdSense en cuanto Google apruebe la cuenta:
+
+1. Andá a [adsense.google.com](https://adsense.google.com) y dá de alta el sitio (por ahora,
+   el subdominio de Netlify sirve para aplicar).
+2. Agregá las páginas legales requeridas (ya están: `/privacidad`, `/terminos`) y esperá la
+   revisión de Google — puede tardar de días a semanas.
+3. Cuando te aprueben, Google te da un ID tipo `ca-pub-XXXXXXXXXXXXXXXX`. Ponelo en
+   `NEXT_PUBLIC_ADSENSE_CLIENT_ID` (`.env.local` y en las env vars de Netlify).
+4. Reemplazá el contenido de `public/ads.txt` con la línea que te da la consola de AdSense
+   (Sites → tu sitio → "Ir a ads.txt").
+5. Con el client ID configurado, el banner de cookies (`src/components/CookieConsent.tsx`)
+   empieza a mostrarse y solo carga el script de AdSense si el usuario acepta.
+6. Para insertar un bloque de anuncio en una página, creá el "ad unit" en la consola de AdSense
+   (te da un `data-ad-slot`) y usá `<AdSlot slot="TU_SLOT_ID" />` (`src/components/AdSlot.tsx`)
+   donde quieras mostrarlo.
+
+Sin tráfico real al sitio, los ingresos van a ser mínimos — conviene sumar contenido (qué es un
+QR, casos de uso, FAQ) antes o mientras se espera la aprobación.
+
 ## Estructura
 
-- `src/app` — rutas de Next.js App Router (`layout.tsx`, `page.tsx`).
-- `src/components` — `Navbar`, `AuthModal`, `SavedModal`.
+- `src/app` — rutas de Next.js App Router (`layout.tsx`, `page.tsx`, `privacidad/`, `terminos/`).
+- `src/components` — `Navbar`, `Footer`, `AuthModal`, `SavedModal`, `CookieConsent`, `AdSlot`.
 - `src/hooks/useQRCode.ts` — genera y actualiza el QR con [`qr-code-styling`](https://github.com/kozakdenys/qr-code-styling) y expone `download()`.
 - `src/lib/appwriteClient.ts` — cliente de Appwrite (`account`, `tablesDB`).
 - `src/types/qr.ts` — tipos compartidos.
