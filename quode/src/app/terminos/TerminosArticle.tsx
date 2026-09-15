@@ -14,9 +14,9 @@ export default function TerminosArticle() {
     <>
       <LegalHeader />
       <main className="flex-1 px-4 py-10 max-w-2xl mx-auto w-full">
-        <article className="bg-white rounded-2xl shadow-sm border border-[#333333]/10 p-6 sm:p-8 text-sm leading-relaxed text-[#333333]">
+        <article className="bg-surface rounded-2xl shadow-sm border border-ink/10 p-6 sm:p-8 text-sm leading-relaxed text-ink">
           <h1 className="text-2xl font-bold mb-6">{c.title}</h1>
-          <p className="text-[#333333]/60 mb-6 text-xs">
+          <p className="text-ink/60 mb-6 text-xs">
             {t.common.updated}: {c.updated}
           </p>
 

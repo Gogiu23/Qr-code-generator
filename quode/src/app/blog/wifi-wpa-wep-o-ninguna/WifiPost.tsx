@@ -9,11 +9,11 @@ import { WIFI_POST_CONTENT } from "@/content/blog/wifiWpaWepONinguna";
 
 const CARD_ICONS = [Lock, ShieldAlert, Unlock];
 const CARD_STYLES = [
-  "bg-[#EAFFD0] border-[#95E1D3]",
-  "bg-[#EAFFD0] border-[#F38181]/50",
-  "bg-[#EAFFD0] border-[#FCE38A]",
+  "bg-page border-secondary",
+  "bg-page border-primary/50",
+  "bg-page border-accent",
 ];
-const CARD_ICON_COLORS = ["text-[#333333]", "text-[#F38181]", "text-[#333333]"];
+const CARD_ICON_COLORS = ["text-ink", "text-primary", "text-ink"];
 
 export default function WifiPost() {
   const { locale } = useLocale();
@@ -26,13 +26,13 @@ export default function WifiPost() {
       <main className="flex-1 px-4 py-10 max-w-2xl mx-auto w-full">
         <Link
           href="/blog"
-          className="mb-3 inline-block text-xs font-semibold text-[#F38181] hover:underline"
+          className="mb-3 inline-block text-xs font-semibold text-primary hover:underline"
         >
           {t.common.backToBlog}
         </Link>
-        <article className="bg-white rounded-2xl shadow-sm border border-[#333333]/10 p-6 sm:p-8 text-sm leading-relaxed text-[#333333]">
+        <article className="bg-surface rounded-2xl shadow-sm border border-ink/10 p-6 sm:p-8 text-sm leading-relaxed text-ink">
           <h1 className="text-2xl font-bold mb-2">{c.title}</h1>
-          <p className="text-[#333333]/60 mb-8 text-xs">
+          <p className="text-ink/60 mb-8 text-xs">
             {t.common.updated}: {c.updated}
           </p>
 
@@ -47,8 +47,8 @@ export default function WifiPost() {
                   className={`rounded-2xl border p-5 flex flex-col items-center text-center gap-2 ${CARD_STYLES[i]}`}
                 >
                   <Icon className={`w-8 h-8 ${CARD_ICON_COLORS[i]}`} />
-                  <span className="text-sm font-bold text-[#333333]">{card.label}</span>
-                  <span className="text-xs text-[#333333]/70">{card.caption}</span>
+                  <span className="text-sm font-bold text-ink">{card.label}</span>
+                  <span className="text-xs text-ink/70">{card.caption}</span>
                 </div>
               );
             })}
@@ -56,11 +56,11 @@ export default function WifiPost() {
 
           <Blocks blocks={c.blocks} />
 
-          <div className="mt-10 bg-[#EAFFD0] rounded-2xl border border-[#95E1D3] p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="mt-10 bg-page rounded-2xl border border-secondary p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm font-semibold">{c.ctaText}</p>
             <Link
               href="/"
-              className="shrink-0 text-xs font-semibold bg-[#FCE38A] text-[#333333] hover:bg-[#FCE38A]/90 px-4 py-2 rounded-lg transition"
+              className="shrink-0 text-xs font-semibold bg-accent text-ink hover:bg-accent/90 px-4 py-2 rounded-lg transition"
             >
               {t.common.goToGenerator}
             </Link>

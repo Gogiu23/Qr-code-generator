@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { getUi } from "@/lib/i18n/ui";
@@ -35,31 +35,15 @@ function setConsent(value: "granted" | "denied") {
   window.dispatchEvent(new Event(CONSENT_EVENT));
 }
 
-function loadAdSenseScript() {
-  if (!ADSENSE_CLIENT_ID) return;
-  if (document.querySelector(`script[data-adsense="true"]`)) return;
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
-  script.crossOrigin = "anonymous";
-  script.dataset.adsense = "true";
-  document.head.appendChild(script);
-}
-
 export default function CookieConsent() {
   const decision = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const { locale } = useLocale();
   const t = getUi(locale);
 
-  useEffect(() => {
-    if (decision === "granted") loadAdSenseScript();
-  }, [decision]);
-
   if (decision !== null || !ADSENSE_CLIENT_ID) return null;
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 bg-[#333333] text-white text-xs sm:text-sm px-4 py-3 flex flex-col sm:flex-row items-center gap-3 justify-between print:hidden">
+    <div className="fixed bottom-0 inset-x-0 z-50 bg-chrome text-white text-xs sm:text-sm px-4 py-3 flex flex-col sm:flex-row items-center gap-3 justify-between print:hidden">
       <p className="text-white/80">
         {t.cookie.text}{" "}
         <Link href="/privacidad" className="underline hover:text-white">
@@ -70,13 +54,13 @@ export default function CookieConsent() {
       <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => setConsent("denied")}
-          className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold transition"
+          className="px-3 py-1.5 rounded-lg bg-surface/10 hover:bg-surface/20 font-semibold transition"
         >
           {t.cookie.reject}
         </button>
         <button
           onClick={() => setConsent("granted")}
-          className="px-3 py-1.5 rounded-lg bg-[#FCE38A] text-[#333333] hover:bg-[#FCE38A]/90 font-semibold transition"
+          className="px-3 py-1.5 rounded-lg bg-accent text-ink hover:bg-accent/90 font-semibold transition"
         >
           {t.cookie.accept}
         </button>

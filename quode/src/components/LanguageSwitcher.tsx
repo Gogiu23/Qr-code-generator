@@ -15,7 +15,7 @@ export default function LanguageSwitcher({ className }: { className?: string }) 
           aria-current={locale === l.code}
           className={`text-[11px] font-bold px-1.5 py-0.5 rounded transition ${
             locale === l.code
-              ? "text-[#FCE38A]"
+              ? "text-accent"
               : "text-white/50 hover:text-white"
           }`}
         >

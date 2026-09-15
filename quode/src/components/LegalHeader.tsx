@@ -21,10 +21,10 @@ export default function LegalHeader({ active }: LegalHeaderProps) {
   ];
 
   return (
-    <header className="bg-[#333333] text-white px-4 py-3 flex items-center justify-between gap-4 border-b-4 border-[#95E1D3] print:hidden">
+    <header className="bg-chrome text-white px-4 py-3 flex items-center justify-between gap-4 border-b-4 border-secondary print:hidden">
       <div className="flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
-          <QrCode className="w-5 h-5 text-[#FCE38A]" />
+          <QrCode className="w-5 h-5 text-accent" />
           QR Studio
         </Link>
         <nav className="hidden sm:flex items-center gap-5">
@@ -33,7 +33,7 @@ export default function LegalHeader({ active }: LegalHeaderProps) {
               key={link.href}
               href={link.href}
               className={`text-xs font-semibold transition ${
-                active === link.href ? "text-[#FCE38A]" : "text-white/70 hover:text-white"
+                active === link.href ? "text-accent" : "text-white/70 hover:text-white"
               }`}
             >
               {link.label}
@@ -45,7 +45,7 @@ export default function LegalHeader({ active }: LegalHeaderProps) {
         <LanguageSwitcher />
         <Link
           href="/"
-          className="flex items-center gap-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition"
+          className="flex items-center gap-1.5 text-xs font-semibold bg-surface/10 hover:bg-surface/20 px-3 py-1.5 rounded-lg transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {t.nav.volver}

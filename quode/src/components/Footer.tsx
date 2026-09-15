@@ -8,7 +8,7 @@ export default function Footer() {
   const t = getUi(locale);
 
   return (
-    <footer className="bg-[#333333] text-white/70 text-xs px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 border-t-4 border-[#95E1D3] print:hidden">
+    <footer className="bg-chrome text-white/70 text-xs px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 border-t-4 border-secondary print:hidden">
       <span>© {new Date().getFullYear()} QR Studio</span>
       <div className="flex items-center gap-4">
         <Link href="/historia" className="hover:text-white transition">

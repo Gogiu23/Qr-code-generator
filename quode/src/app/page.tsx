@@ -38,6 +38,9 @@ import {
   Mail,
   Wifi,
   ChevronDown,
+  Pencil,
+  Share2,
+  MessageCircle,
 } from "lucide-react";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { getUi } from "@/lib/i18n/ui";
@@ -65,9 +68,12 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"content" | "style">("content");
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
   const downloadMenuRef = useRef<HTMLDivElement>(null);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!downloadMenuOpen) return;
+    if (!downloadMenuOpen && !shareMenuOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
       if (
         downloadMenuRef.current &&
@@ -75,10 +81,16 @@ export default function Home() {
       ) {
         setDownloadMenuOpen(false);
       }
+      if (
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(e.target as Node)
+      ) {
+        setShareMenuOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [downloadMenuOpen]);
+  }, [downloadMenuOpen, shareMenuOpen]);
 
   // Estado del QR
   const [titleOverride, setTitleOverride] = useState<string | null>(null);
@@ -125,7 +137,7 @@ export default function Home() {
     logoSize: 0.4,
   });
 
-  const { ref: qrRef, download } = useQRCode(content, options);
+  const { ref: qrRef, download, share } = useQRCode(content, options);
 
   const checkUser = async () => {
     try {
@@ -225,12 +237,33 @@ export default function Home() {
   };
 
   const handleLogout = async () => {
-    await account.deleteSession("current");
+    try {
+      await account.deleteSession("current");
+    } catch {
+      // La sesión ya puede estar vencida del lado del servidor; igual
+      // limpiamos el estado local para reflejar que el usuario está deslogueado.
+    }
     setUser(null);
   };
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleShare = async () => {
+    const result = await share(title, t.home.shareText);
+    if (result === "unsupported") setShareMenuOpen((v) => !v);
+  };
+
+  const handleShareFallback = (channel: "whatsapp" | "email") => {
+    download("png", title);
+    const message = t.home.shareFallbackMessage;
+    if (channel === "whatsapp") {
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
+    } else {
+      window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(message)}`;
+    }
+    setShareMenuOpen(false);
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,7 +278,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#EAFFD0] flex flex-col font-sans pb-10">
+    <div className="min-h-screen bg-page flex flex-col font-sans pb-10">
       <Navbar
         user={user}
         onOpenAuth={() => setAuthModalOpen(true)}
@@ -254,10 +287,10 @@ export default function Home() {
 
       <main className="flex-1 max-w-md mx-auto sm:max-w-5xl w-full px-4 pt-4 pb-4">
         <div className="text-center mb-6 print:hidden">
-          <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
+          <h1 className="text-xl sm:text-2xl font-bold text-ink">
             {t.home.heroTitle}
           </h1>
-          <p className="text-sm text-[#333333]/70 mt-1 max-w-lg mx-auto">
+          <p className="text-sm text-ink/70 mt-1 max-w-lg mx-auto">
             {t.home.heroSubtitle}
           </p>
         </div>
@@ -273,20 +306,27 @@ export default function Home() {
           </div>
         )}
         <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[1fr_360px] lg:gap-5 lg:items-start">
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#333333]/10 flex flex-col items-center print:shadow-none print:border-none print:p-0 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-4">
+        <div className="bg-surface rounded-2xl p-5 shadow-sm border border-ink/10 flex flex-col items-center print:shadow-none print:border-none print:p-0 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-4">
           <div className="text-center mb-3 print:hidden">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#333333]/40 mb-1">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-ink/40 mb-1">
               {t.home.preview}
             </p>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-center font-bold text-lg text-[#333333] border-b border-transparent hover:border-[#F38181]/30 focus:border-[#F38181] focus:outline-none bg-transparent"
-            />
+            <div
+              onClick={() => titleInputRef.current?.focus()}
+              className="inline-flex items-center gap-1.5 cursor-text group"
+            >
+              <input
+                ref={titleInputRef}
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="text-center font-bold text-lg text-ink border-b border-transparent hover:border-primary/30 focus:border-primary focus:outline-none bg-transparent"
+              />
+              <Pencil className="w-3.5 h-3.5 text-ink/30 group-hover:text-primary transition shrink-0" />
+            </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#95E1D3]/25 border border-[#95E1D3]/50 flex items-center justify-center min-h-[290px] w-full max-w-[290px] print:bg-white print:p-0">
+          <div className="p-4 rounded-xl bg-secondary/25 border border-secondary/50 flex items-center justify-center min-h-[290px] w-full max-w-[290px] print:bg-surface print:p-0">
             <div
               ref={qrRef}
               className="qr-container shadow-sm print:shadow-none overflow-hidden"
@@ -300,14 +340,14 @@ export default function Home() {
             <div className="relative" ref={downloadMenuRef}>
               <button
                 onClick={() => setDownloadMenuOpen((v) => !v)}
-                className="w-full flex items-center justify-center gap-1.5 bg-[#F38181] hover:bg-[#333333] text-white py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
+                className="w-full flex items-center justify-center gap-1.5 bg-primary hover:bg-chrome text-white py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
               >
-                <Download className="w-3.5 h-3.5 text-[#FCE38A]" />
+                <Download className="w-3.5 h-3.5 text-accent" />
                 {t.home.download}
                 <ChevronDown className="w-3 h-3" />
               </button>
               {downloadMenuOpen && (
-                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-white rounded-xl border border-[#333333]/10 shadow-lg overflow-hidden">
+                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-surface rounded-xl border border-ink/10 shadow-lg overflow-hidden">
                   {DOWNLOAD_FORMATS.map((ext) => (
                     <button
                       key={ext}
@@ -315,7 +355,7 @@ export default function Home() {
                         download(ext, title);
                         setDownloadMenuOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs font-semibold text-[#333333] hover:bg-[#EAFFD0] transition"
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-ink hover:bg-page transition"
                     >
                       {ext.toUpperCase()}
                     </button>
@@ -325,14 +365,14 @@ export default function Home() {
             </div>
             <button
               onClick={handlePrint}
-              className="flex items-center justify-center gap-1.5 bg-[#333333] hover:bg-[#F38181] text-white py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
+              className="flex items-center justify-center gap-1.5 bg-chrome hover:bg-primary text-white py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
             >
-              <Printer className="w-3.5 h-3.5 text-[#FCE38A]" />
+              <Printer className="w-3.5 h-3.5 text-accent" />
               {t.home.print}
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center justify-center gap-1.5 bg-[#FCE38A] hover:bg-[#FCE38A]/90 text-[#333333] py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
+              className="flex items-center justify-center gap-1.5 bg-accent hover:bg-accent/90 text-ink py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />
               {t.home.save}
@@ -345,25 +385,52 @@ export default function Home() {
                   setSavedModalOpen(true);
                 }
               }}
-              className="flex items-center justify-center gap-1.5 bg-white border border-[#95E1D3] text-[#333333] hover:bg-[#95E1D3]/20 py-2 px-3 rounded-xl text-xs font-bold transition"
+              className="flex items-center justify-center gap-1.5 bg-surface border border-secondary text-ink hover:bg-secondary/20 py-2 px-3 rounded-xl text-xs font-bold transition"
             >
-              <FolderOpen className="w-3.5 h-3.5 text-[#95E1D3]" />
+              <FolderOpen className="w-3.5 h-3.5 text-secondary" />
               {t.home.myQr}
             </button>
+            <div className="relative col-span-2 sm:col-span-4 lg:col-span-2" ref={shareMenuRef}>
+              <button
+                onClick={handleShare}
+                className="w-full flex items-center justify-center gap-1.5 bg-secondary hover:bg-secondary/80 text-ink py-2 px-3 rounded-xl text-xs font-bold transition shadow-sm"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                {t.home.share}
+              </button>
+              {shareMenuOpen && (
+                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-surface rounded-xl border border-ink/10 shadow-lg overflow-hidden">
+                  <button
+                    onClick={() => handleShareFallback("whatsapp")}
+                    className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs font-semibold text-ink hover:bg-page transition"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-secondary" />
+                    {t.home.shareWhatsapp}
+                  </button>
+                  <button
+                    onClick={() => handleShareFallback("email")}
+                    className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs font-semibold text-ink hover:bg-page transition"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-secondary" />
+                    {t.home.shareEmail}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#333333]/10 print:hidden lg:col-start-1 lg:row-start-1">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[#333333]/40 mb-3">
+        <div className="bg-surface rounded-2xl p-5 shadow-sm border border-ink/10 print:hidden lg:col-start-1 lg:row-start-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-ink/40 mb-3">
             {t.home.personalize}
           </p>
-          <div className="flex border-b border-[#F38181]/15 mb-4">
+          <div className="flex border-b border-primary/15 mb-4">
             <button
               onClick={() => setActiveTab("content")}
               className={`flex-1 py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition ${
                 activeTab === "content"
-                  ? "border-[#F38181] text-[#F38181]"
-                  : "border-transparent text-[#333333]/60"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-ink/60"
               }`}
             >
               <Sparkles className="w-4 h-4" />
@@ -373,8 +440,8 @@ export default function Home() {
               onClick={() => setActiveTab("style")}
               className={`flex-1 py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition ${
                 activeTab === "style"
-                  ? "border-[#F38181] text-[#F38181]"
-                  : "border-transparent text-[#333333]/60"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-ink/60"
               }`}
             >
               <Sliders className="w-4 h-4" />
@@ -385,7 +452,7 @@ export default function Home() {
           {activeTab === "content" && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#333333] mb-2">
+                <label className="block text-xs font-bold text-ink mb-2">
                   {t.home.contentTypeLabel}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -398,8 +465,8 @@ export default function Home() {
                         onClick={() => setContentType(type)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition ${
                           contentType === type
-                            ? "bg-[#F38181] text-white border-[#F38181]"
-                            : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
+                            ? "bg-primary text-white border-primary"
+                            : "bg-page text-ink border-primary/20"
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5" />
@@ -412,7 +479,7 @@ export default function Home() {
 
               {contentType === "url" && (
                 <div>
-                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                  <label className="block text-xs font-bold text-ink mb-1">
                     {t.home.fields.url}
                   </label>
                   <input
@@ -420,14 +487,14 @@ export default function Home() {
                     value={contentFields.url}
                     onChange={(e) => setContentField("url", e.target.value)}
                     placeholder={t.home.fields.urlPlaceholder}
-                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                    className="w-full p-2.5 text-sm bg-page border border-primary/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-ink"
                   />
                 </div>
               )}
 
               {contentType === "text" && (
                 <div>
-                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                  <label className="block text-xs font-bold text-ink mb-1">
                     {t.home.fields.text}
                   </label>
                   <textarea
@@ -435,14 +502,14 @@ export default function Home() {
                     onChange={(e) => setContentField("text", e.target.value)}
                     placeholder={t.home.fields.textPlaceholder}
                     rows={3}
-                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333] resize-none"
+                    className="w-full p-2.5 text-sm bg-page border border-primary/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-ink resize-none"
                   />
                 </div>
               )}
 
               {contentType === "phone" && (
                 <div>
-                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                  <label className="block text-xs font-bold text-ink mb-1">
                     {t.home.fields.phone}
                   </label>
                   <input
@@ -450,14 +517,14 @@ export default function Home() {
                     value={contentFields.phone}
                     onChange={(e) => setContentField("phone", e.target.value)}
                     placeholder={t.home.fields.phonePlaceholder}
-                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                    className="w-full p-2.5 text-sm bg-page border border-primary/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-ink"
                   />
                 </div>
               )}
 
               {contentType === "email" && (
                 <div>
-                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                  <label className="block text-xs font-bold text-ink mb-1">
                     {t.home.fields.email}
                   </label>
                   <input
@@ -465,7 +532,7 @@ export default function Home() {
                     value={contentFields.email}
                     onChange={(e) => setContentField("email", e.target.value)}
                     placeholder={t.home.fields.emailPlaceholder}
-                    className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                    className="w-full p-2.5 text-sm bg-page border border-primary/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-ink"
                   />
                 </div>
               )}
@@ -473,7 +540,7 @@ export default function Home() {
               {contentType === "wifi" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-bold text-[#333333] mb-1">
+                    <label className="block text-xs font-bold text-ink mb-1">
                       {t.home.fields.ssid}
                     </label>
                     <input
@@ -481,11 +548,11 @@ export default function Home() {
                       value={contentFields.wifiSsid}
                       onChange={(e) => setContentField("wifiSsid", e.target.value)}
                       placeholder={t.home.fields.ssidPlaceholder}
-                      className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                      className="w-full p-2.5 text-sm bg-page border border-primary/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-ink"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-[#333333] mb-1">
+                    <label className="block text-xs font-bold text-ink mb-1">
                       {t.home.fields.security}
                     </label>
                     <div className="grid grid-cols-3 gap-2">
@@ -497,8 +564,8 @@ export default function Home() {
                             onClick={() => setContentField("wifiEncryption", enc)}
                             className={`p-2 text-xs rounded-xl border font-semibold transition ${
                               contentFields.wifiEncryption === enc
-                                ? "bg-[#F38181] text-white border-[#F38181]"
-                                : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
+                                ? "bg-primary text-white border-primary"
+                                : "bg-page text-ink border-primary/20"
                             }`}
                           >
                             {enc === "nopass" ? t.home.fields.none : enc}
@@ -509,7 +576,7 @@ export default function Home() {
                   </div>
                   {contentFields.wifiEncryption !== "nopass" && (
                     <div>
-                      <label className="block text-xs font-bold text-[#333333] mb-1">
+                      <label className="block text-xs font-bold text-ink mb-1">
                         {t.home.fields.password}
                       </label>
                       <input
@@ -519,7 +586,7 @@ export default function Home() {
                           setContentField("wifiPassword", e.target.value)
                         }
                         placeholder={t.home.fields.passwordPlaceholder}
-                        className="w-full p-2.5 text-sm bg-[#EAFFD0] border border-[#F38181]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F38181] text-[#333333]"
+                        className="w-full p-2.5 text-sm bg-page border border-primary/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-ink"
                       />
                     </div>
                   )}
@@ -527,11 +594,11 @@ export default function Home() {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-[#333333] mb-1">
+                <label className="block text-xs font-bold text-ink mb-1">
                   {t.home.fields.logo}
                 </label>
                 <div className="flex items-center gap-2">
-                  <label className="flex-1 flex items-center justify-center gap-2 border border-dashed border-[#F38181]/40 bg-[#EAFFD0] hover:bg-[#D9FFC0] p-3 rounded-xl cursor-pointer text-xs font-semibold text-[#F38181] transition">
+                  <label className="flex-1 flex items-center justify-center gap-2 border border-dashed border-primary/40 bg-page hover:bg-page/70 p-3 rounded-xl cursor-pointer text-xs font-semibold text-primary transition">
                     <ImageIcon className="w-4 h-4" />
                     {t.home.fields.uploadImage}
                     <input
@@ -555,10 +622,10 @@ export default function Home() {
                 {options.logoUrl && (
                   <div className="mt-3">
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs font-bold text-[#333333]">
+                      <label className="text-xs font-bold text-ink">
                         {t.home.fields.logoSize}
                       </label>
-                      <span className="text-xs font-mono font-bold text-[#333333]">
+                      <span className="text-xs font-mono font-bold text-ink">
                         {Math.round((options.logoSize ?? 0.4) * 100)}%
                       </span>
                     </div>
@@ -574,7 +641,7 @@ export default function Home() {
                           logoSize: Number(e.target.value),
                         }))
                       }
-                      className="w-full accent-[#F38181] cursor-pointer"
+                      className="w-full accent-primary cursor-pointer"
                     />
                   </div>
                 )}
@@ -586,7 +653,7 @@ export default function Home() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                  <label className="block text-xs font-bold text-ink mb-1">
                     {t.home.style.dotsColor}
                   </label>
                   <div className="flex items-center gap-2">
@@ -598,7 +665,7 @@ export default function Home() {
                       }
                       className="w-9 h-9 rounded-lg border-0 cursor-pointer"
                     />
-                    <span className="text-xs font-mono font-bold text-[#333333]">
+                    <span className="text-xs font-mono font-bold text-ink">
                       {options.dotsColor}
                     </span>
                   </div>
@@ -612,9 +679,9 @@ export default function Home() {
                           dotsGradient: e.target.checked,
                         })
                       }
-                      className="accent-[#F38181] w-3.5 h-3.5 cursor-pointer"
+                      className="accent-primary w-3.5 h-3.5 cursor-pointer"
                     />
-                    <span className="text-[11px] font-bold text-[#333333]">
+                    <span className="text-[11px] font-bold text-ink">
                       {t.home.style.gradient}
                     </span>
                   </label>
@@ -631,14 +698,14 @@ export default function Home() {
                         }
                         className="w-9 h-9 rounded-lg border-0 cursor-pointer"
                       />
-                      <span className="text-xs font-mono font-bold text-[#333333]">
+                      <span className="text-xs font-mono font-bold text-ink">
                         {options.dotsColor2}
                       </span>
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#333333] mb-1">
+                  <label className="block text-xs font-bold text-ink mb-1">
                     {t.home.style.bgColor}
                   </label>
                   {!options.bgTransparent && (
@@ -651,7 +718,7 @@ export default function Home() {
                         }
                         className="w-9 h-9 rounded-lg border-0 cursor-pointer"
                       />
-                      <span className="text-xs font-mono font-bold text-[#333333]">
+                      <span className="text-xs font-mono font-bold text-ink">
                         {options.bgColor}
                       </span>
                     </div>
@@ -674,9 +741,9 @@ export default function Home() {
                             bgGradient: e.target.checked,
                           })
                         }
-                        className="accent-[#F38181] w-3.5 h-3.5 cursor-pointer disabled:cursor-not-allowed"
+                        className="accent-primary w-3.5 h-3.5 cursor-pointer disabled:cursor-not-allowed"
                       />
-                      <span className="text-[11px] font-bold text-[#333333]">
+                      <span className="text-[11px] font-bold text-ink">
                         {t.home.style.gradient}
                       </span>
                     </label>
@@ -690,9 +757,9 @@ export default function Home() {
                             bgTransparent: e.target.checked,
                           })
                         }
-                        className="accent-[#F38181] w-3.5 h-3.5 cursor-pointer"
+                        className="accent-primary w-3.5 h-3.5 cursor-pointer"
                       />
-                      <span className="text-[11px] font-bold text-[#333333]">
+                      <span className="text-[11px] font-bold text-ink">
                         {t.home.style.transparentBg}
                       </span>
                     </label>
@@ -707,7 +774,7 @@ export default function Home() {
                         }
                         className="w-9 h-9 rounded-lg border-0 cursor-pointer"
                       />
-                      <span className="text-xs font-mono font-bold text-[#333333]">
+                      <span className="text-xs font-mono font-bold text-ink">
                         {options.bgColor2}
                       </span>
                     </div>
@@ -716,7 +783,7 @@ export default function Home() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#333333] mb-1">
+                <label className="block text-xs font-bold text-ink mb-1">
                   {t.home.style.bgShape}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -727,8 +794,8 @@ export default function Home() {
                       onClick={() => setOptions({ ...options, bgShape: shape })}
                       className={`p-2 text-xs rounded-xl border font-semibold transition ${
                         options.bgShape === shape
-                          ? "bg-[#F38181] text-white border-[#F38181]"
-                          : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
+                          ? "bg-primary text-white border-primary"
+                          : "bg-page text-ink border-primary/20"
                       }`}
                     >
                       {shape === "square" ? t.home.style.square : t.home.style.rounded}
@@ -738,7 +805,7 @@ export default function Home() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#333333] mb-1">
+                <label className="block text-xs font-bold text-ink mb-1">
                   {t.home.style.dotStyle}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -759,8 +826,8 @@ export default function Home() {
                       }
                       className={`p-2 text-xs rounded-xl border capitalize font-semibold transition ${
                         options.dotStyle === style
-                          ? "bg-[#F38181] text-white border-[#F38181]"
-                          : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
+                          ? "bg-primary text-white border-primary"
+                          : "bg-page text-ink border-primary/20"
                       }`}
                     >
                       {style}
@@ -770,7 +837,7 @@ export default function Home() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#333333] mb-1">
+                <label className="block text-xs font-bold text-ink mb-1">
                   {t.home.style.cornerStyle}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -785,8 +852,8 @@ export default function Home() {
                       }
                       className={`p-2 text-xs rounded-xl border capitalize font-semibold transition ${
                         options.cornerSquareStyle === style
-                          ? "bg-[#F38181] text-white border-[#F38181]"
-                          : "bg-[#EAFFD0] text-[#333333] border-[#F38181]/20"
+                          ? "bg-primary text-white border-primary"
+                          : "bg-page text-ink border-primary/20"
                       }`}
                     >
                       {style}

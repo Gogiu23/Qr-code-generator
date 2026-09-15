@@ -1,20 +1,58 @@
 @import "tailwindcss";
 
+/* Estructura (fondo/superficie/texto): cambia solo con el modo oscuro */
 :root {
-  --background: #eaffd0;
-  --foreground: #333333;
+  --color-page: #eaffd0;
+  --color-surface: #ffffff;
+  --color-ink: #333333;
+  --color-chrome: #333333;
+  --color-primary: #f38181;
+  --color-secondary: #95e1d3;
+  --color-accent: #fce38a;
+  --font-scale: 1;
 }
 
+:root[data-theme="dark"] {
+  --color-page: #15171a;
+  --color-surface: #1f2226;
+  --color-ink: #eaeaea;
+  --color-chrome: #101214;
+}
+
+/* Paletas: solo cambian los 3 colores de marca, no la estructura */
+:root[data-palette="oceano"] {
+  --color-primary: #3a8dd0;
+  --color-secondary: #1c6e63;
+  --color-accent: #e8c27a;
+}
+
+:root[data-palette="atardecer"] {
+  --color-primary: #e0653f;
+  --color-secondary: #7a5fb0;
+  --color-accent: #f2c14e;
+}
+
+/* La paleta "custom" pisa estas variables por JS via style inline en <html> */
+
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-page: var(--color-page);
+  --color-surface: var(--color-surface);
+  --color-ink: var(--color-ink);
+  --color-chrome: var(--color-chrome);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  font-size: calc(16px * var(--font-scale, 1));
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-page);
+  color: var(--color-ink);
   font-family: Arial, Helvetica, sans-serif;
 }
 

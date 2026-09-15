@@ -36,7 +36,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-async function downloadRoundedPng(blob: Blob, filename: string) {
+async function getRoundedPngBlob(blob: Blob): Promise<Blob | null> {
   const url = URL.createObjectURL(blob);
   const img = await loadImage(url);
   URL.revokeObjectURL(url);
@@ -45,7 +45,7 @@ async function downloadRoundedPng(blob: Blob, filename: string) {
   canvas.width = img.width;
   canvas.height = img.height;
   const ctx = canvas.getContext("2d");
-  if (!ctx) return;
+  if (!ctx) return null;
 
   const radius = Math.round(img.width * 0.09);
   const w = canvas.width;
@@ -61,9 +61,12 @@ async function downloadRoundedPng(blob: Blob, filename: string) {
   ctx.clip();
   ctx.drawImage(img, 0, 0);
 
-  canvas.toBlob((outBlob) => {
-    if (outBlob) downloadBlob(outBlob, filename);
-  }, "image/png");
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+}
+
+async function downloadRoundedPng(blob: Blob, filename: string) {
+  const rounded = await getRoundedPngBlob(blob);
+  if (rounded) downloadBlob(rounded, filename);
 }
 
 function blobToDataUrl(blob: Blob): Promise<string> {
@@ -180,5 +183,38 @@ export function useQRCode(content: string, options: QROptions) {
     qr.download({ name, extension });
   };
 
-  return { ref, download };
+  const share = async (
+    name: string,
+    text?: string,
+  ): Promise<"shared" | "cancelled" | "unsupported"> => {
+    const qr = qrRef.current;
+    if (!qr) return "unsupported";
+    if (typeof navigator.share !== "function") return "unsupported";
+
+    const rawBlob = await qr.getRawData("png");
+    if (!(rawBlob instanceof Blob)) return "unsupported";
+
+    const blob =
+      options.bgShape === "rounded"
+        ? ((await getRoundedPngBlob(rawBlob)) ?? rawBlob)
+        : rawBlob;
+    const file = new File([blob], `${name}.png`, { type: "image/png" });
+
+    if (
+      typeof navigator.canShare !== "function" ||
+      !navigator.canShare({ files: [file] })
+    ) {
+      return "unsupported";
+    }
+
+    try {
+      await navigator.share({ files: [file], title: name, text });
+      return "shared";
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return "cancelled";
+      return "unsupported";
+    }
+  };
+
+  return { ref, download, share };
 }
