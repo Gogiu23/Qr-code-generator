@@ -1,6 +1,26 @@
 {
   "/_global-error/page": "app/_global-error/page.js",
   "/_not-found/page": "app/_not-found/page.js",
+  "/api/appwrite/[...path]/route": "app/api/appwrite/[...path]/route.js",
+  "/apple-icon/route": "app/apple-icon/route.js",
+  "/blog/como-funciona-un-codigo-qr/page": "app/blog/como-funciona-un-codigo-qr/page.js",
+  "/blog/correccion-de-errores-en-qr/page": "app/blog/correccion-de-errores-en-qr/page.js",
+  "/blog/page": "app/blog/page.js",
+  "/blog/png-svg-pdf-o-jpeg-que-formato-elegir/page": "app/blog/png-svg-pdf-o-jpeg-que-formato-elegir/page.js",
+  "/blog/que-tipo-de-qr-elegir/page": "app/blog/que-tipo-de-qr-elegir/page.js",
+  "/blog/wifi-wpa-wep-o-ninguna/page": "app/blog/wifi-wpa-wep-o-ninguna/page.js",
+  "/configuracion/page": "app/configuracion/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/historia/page": "app/historia/page.js",
+  "/icons/icon-192/route": "app/icons/icon-192/route.js",
+  "/icons/icon-512/route": "app/icons/icon-512/route.js",
+  "/icons/icon-maskable-512/route": "app/icons/icon-maskable-512/route.js",
+  "/manifest.webmanifest/route": "app/manifest.webmanifest/route.js",
+  "/opengraph-image/route": "app/opengraph-image/route.js",
+  "/page": "app/page.js",
+  "/perfil/page": "app/perfil/page.js",
+  "/privacidad/page": "app/privacidad/page.js",
+  "/robots.txt/route": "app/robots.txt/route.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
+  "/terminos/page": "app/terminos/page.js"
 }

@@ -1,0 +1,3 @@
+module.exports=[91227,a=>{a.v(b=>Promise.all(["server/chunks/ssr/[externals]_next_dist_compiled_@vercel_og_index_node_01np1ap.js"].map(b=>a.l(b))).then(()=>b(21425)))},39870,a=>{"use strict";a.i(7997),a.i(99475);var b=a.i(52425);let c={contentType:"image/png",size:{width:180,height:180}};async function d(a){let{__metadata_id__:d,...e}=await a.params,f=(0,b.fillMetadataSegment)("/",e,"apple-icon",!1);return[function(a){let b={alt:a.alt,type:a.contentType||"image/png",url:f+"?4d92a4df2912b1b4"},{size:c}=a;return c&&(b.sizes=`${c.width}x${c.height}`),b}(c)]}a.s(["default",0,d],39870)},88311,function(a){a.n(a.i(39870))}];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__1-abzp3._.js.map

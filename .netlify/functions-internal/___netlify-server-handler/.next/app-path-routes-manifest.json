@@ -1,6 +1,26 @@
 {
   "/_global-error/page": "/_global-error",
   "/_not-found/page": "/_not-found",
+  "/api/appwrite/[...path]/route": "/api/appwrite/[...path]",
+  "/apple-icon/route": "/apple-icon",
+  "/blog/como-funciona-un-codigo-qr/page": "/blog/como-funciona-un-codigo-qr",
+  "/blog/correccion-de-errores-en-qr/page": "/blog/correccion-de-errores-en-qr",
+  "/blog/page": "/blog",
+  "/blog/png-svg-pdf-o-jpeg-que-formato-elegir/page": "/blog/png-svg-pdf-o-jpeg-que-formato-elegir",
+  "/blog/que-tipo-de-qr-elegir/page": "/blog/que-tipo-de-qr-elegir",
+  "/blog/wifi-wpa-wep-o-ninguna/page": "/blog/wifi-wpa-wep-o-ninguna",
+  "/configuracion/page": "/configuracion",
   "/favicon.ico/route": "/favicon.ico",
-  "/page": "/"
+  "/historia/page": "/historia",
+  "/icons/icon-192/route": "/icons/icon-192",
+  "/icons/icon-512/route": "/icons/icon-512",
+  "/icons/icon-maskable-512/route": "/icons/icon-maskable-512",
+  "/manifest.webmanifest/route": "/manifest.webmanifest",
+  "/opengraph-image/route": "/opengraph-image",
+  "/page": "/",
+  "/perfil/page": "/perfil",
+  "/privacidad/page": "/privacidad",
+  "/robots.txt/route": "/robots.txt",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/terminos/page": "/terminos"
 }

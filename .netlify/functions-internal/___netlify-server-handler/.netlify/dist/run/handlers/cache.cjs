@@ -112,11 +112,11 @@ var NetlifyCacheHandler = class {
       requestContext.responseCacheTags = cacheTags;
       return;
     }
-    if (cacheValue.kind === "PAGE" || cacheValue.kind === "PAGES" || cacheValue.kind === "APP_PAGE" || cacheValue.kind === "ROUTE" || cacheValue.kind === "APP_ROUTE") {
-      if (cacheValue.headers?.[import_constants.NEXT_CACHE_TAGS_HEADER]) {
-        const cacheTags = cacheValue.headers[import_constants.NEXT_CACHE_TAGS_HEADER].split(/,|%2c/gi);
+    if (cacheValue.kind === "PAGE" || cacheValue.kind === "PAGES" || cacheValue.kind === "REDIRECT" || cacheValue.kind === "APP_PAGE" || cacheValue.kind === "ROUTE" || cacheValue.kind === "APP_ROUTE") {
+      if (cacheValue.kind !== "REDIRECT" && cacheValue.headers?.[import_constants.NEXT_CACHE_TAGS_HEADER]) {
+        const cacheTags = cacheValue.headers[import_constants.NEXT_CACHE_TAGS_HEADER].split(/,|%2c/gi).map(encodeURI);
         requestContext.responseCacheTags = cacheTags;
-      } else if ((cacheValue.kind === "PAGE" || cacheValue.kind === "PAGES") && typeof cacheValue.pageData === "object") {
+      } else if ((cacheValue.kind === "PAGE" || cacheValue.kind === "PAGES") && typeof cacheValue.pageData === "object" || cacheValue.kind === "REDIRECT" && typeof cacheValue.props === "object") {
         const cacheTags = [`_N_T_${key === "/index" ? "/" : encodeURI(key)}`];
         requestContext.responseCacheTags = cacheTags;
       }
@@ -216,7 +216,7 @@ var NetlifyCacheHandler = class {
       this.captureResponseCacheLastModified(blob, key, span);
       if (staleByTags) {
         span?.addEvent("Stale", { staleByTags, key, ttl });
-        blob.lastModified = -1;
+        this.markCacheEntryStaleByTags(blob);
       }
       const isDataRequest = Boolean(context.fetchUrl);
       if (!isDataRequest) {
@@ -286,6 +286,13 @@ var NetlifyCacheHandler = class {
             }
           };
         }
+        case "REDIRECT": {
+          await this.injectEntryToPrerenderManifest(key, blob.value);
+          return {
+            lastModified: blob.lastModified,
+            value: blob.value
+          };
+        }
         default:
           span?.recordException(new Error(`Unknown cache entry kind: ${blob.value?.kind}`));
       }
@@ -304,7 +311,7 @@ var NetlifyCacheHandler = class {
         body: data.body.toString("base64")
       };
     }
-    if ((0, import_cache_types.isCachedPageValue)(data)) {
+    if ((0, import_cache_types.isCachedPageValue)(data) || data?.kind === "REDIRECT") {
       return {
         ...data,
         revalidate: context.revalidate ?? context.cacheControl?.revalidate,
@@ -345,7 +352,7 @@ var NetlifyCacheHandler = class {
           requestContext.isCacheableAppPage = true;
         }
       }
-      if (!data && !isDataReq || data?.kind === "PAGE" || data?.kind === "PAGES") {
+      if (!data && !isDataReq || data?.kind === "PAGE" || data?.kind === "PAGES" || data?.kind === "REDIRECT") {
         const requestContext = (0, import_request_context.getRequestContext)();
         if (requestContext?.didPagesRouterOnDemandRevalidate) {
           const tag = `_N_T_${key === "/index" ? "/" : encodeURI(key)}`;
@@ -358,6 +365,43 @@ var NetlifyCacheHandler = class {
     return (0, import_tags_handler.markTagsAsStaleAndPurgeEdgeCache)(tagOrTags, durations);
   }
   resetRequestCache() {
+  }
+  /**
+   * Mutates a cache entry that was found to be stale (but not yet expired) through
+   * on-demand revalidated tags so that Next.js serves it stale while triggering a
+   * background revalidation.
+   *
+   * We can NOT signal staleness with `lastModified = -1` for full-route cache
+   * entries anymore: since Next.js 16 that sentinel means "entry is past its
+   * `expire` → do a blocking re-render" rather than "serve stale". See the
+   * `incremental-cache` `get`: `lastModified === -1` ⇒ `isStale = -1`, and the
+   * response-cache treats `isStale === -1` as "skip the early stale resolve and
+   * block on a fresh render".
+   *
+   * Instead we drive Next.js' native staleness math, which both old and new
+   * Next.js resolve to `isStale === true` (serve stale + background revalidation):
+   *  - `revalidate: 1` + a `lastModified` 2s in the past ⇒ `revalidateAfter = now - 1000 < now` ⇒ stale
+   *  - `expire: undefined`                               ⇒ `expireAfter` undefined ⇒ never the `-1` block path
+   *
+   * `revalidate` must be `>= 1` (Next.js 16 rejects `revalidate: 0` with "Invalid
+   * revalidate configuration provided: 0 < 1") and is needed because force-static
+   * entries have `revalidate: false`, which would otherwise resolve as fresh.
+   *
+   * Actual expiry is still enforced by `checkCacheEntryStaleByTags`: once the tag's
+   * `expireAt` is reached it reports the entry as expired and `get` returns `null`
+   * (cache miss → blocking re-render), so we don't need to encode `expire` here.
+   */
+  markCacheEntryStaleByTags(blob) {
+    if (!blob.value) {
+      return;
+    }
+    if (blob.value.kind === "ROUTE" || blob.value.kind === "APP_ROUTE" || blob.value.kind === "PAGE" || blob.value.kind === "PAGES" || blob.value.kind === "APP_PAGE" || blob.value.kind === "REDIRECT") {
+      blob.lastModified = Date.now() - 2 * 1e3;
+      blob.value.cacheControl = { revalidate: 1, expire: void 0 };
+      blob.value.revalidate = 1;
+      return;
+    }
+    blob.lastModified = -1;
   }
   /**
    * Checks if a cache entry is stale through on demand revalidated tags

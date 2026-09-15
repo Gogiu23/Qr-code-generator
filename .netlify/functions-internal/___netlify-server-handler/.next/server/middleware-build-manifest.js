@@ -4,17 +4,21 @@ globalThis.__BUILD_MANIFEST = {
   },
   "devFiles": [],
   "polyfillFiles": [
-    "static/chunks/a6dad97d9634a72d.js"
+    "static/chunks/0cz1d0mv5g_q7.js"
   ],
-  "lowPriorityFiles": [],
+  "lowPriorityFiles": [
+    "static/35SIwagt30frxC-mV_ggL/_buildManifest.js",
+    "static/35SIwagt30frxC-mV_ggL/_ssgManifest.js",
+    "static/35SIwagt30frxC-mV_ggL/_clientMiddlewareManifest.js"
+  ],
   "rootMainFiles": [
-    "static/chunks/6426e5eb589292bd.js",
-    "static/chunks/d4b4a1ad90e2acdb.js",
-    "static/chunks/0b2c3a34a14dac7d.js",
-    "static/chunks/turbopack-742eaad3fe000b75.js"
-  ]
+    "static/chunks/310vm2bl3xxpt.js",
+    "static/chunks/19mx3mg6lkumu.js",
+    "static/chunks/27t_qfc-3_lzs.js",
+    "static/chunks/2-rtuqsgzmno4.js",
+    "static/chunks/turbopack-1otuxod_nkio7.js"
+  ],
+  "rootMainFilesTree": {},
+  "pagesChunkGroupBootstrapParams": {},
+  "chunkLoadingGlobal": "TURBOPACK"
 };
-globalThis.__BUILD_MANIFEST.lowPriorityFiles = [
-"/static/" + process.env.__NEXT_BUILD_ID + "/_buildManifest.js",
-"/static/" + process.env.__NEXT_BUILD_ID + "/_ssgManifest.js"
-];

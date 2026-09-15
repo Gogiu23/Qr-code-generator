@@ -1,14 +1,22 @@
-plugins = []
-headers = []
-redirects = []
+headersOrigin = "inline"
+redirectsOrigin = "inline"
 
 [functions]
 
 [functions."*"]
 
+[[plugins]]
+origin = "default"
+package = "@netlify/plugin-nextjs"
+
+[plugins.inputs]
+
 [build]
-publish = "/Users/alessandrodominici/Proyectos/qr-generator"
-publishOrigin = "default"
+publish = "/Users/alessandrodominici/Proyectos/qr-generator/quode/.next"
+publishOrigin = "ui"
+commandOrigin = "ui"
+base = "/Users/alessandrodominici/Proyectos/qr-generator/quode"
+command = "npm run build"
 
 [build.environment]
 
@@ -23,3 +31,51 @@ publishOrigin = "default"
 [build.processing.js]
 
 [build.services]
+
+[[headers]]
+for = "/_next/static/*"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[redirects]]
+from = "/_next/image"
+to = "/.netlify/images?url=:url&w=:width&q=:quality"
+status = 200.0
+force = false
+
+[redirects.query]
+url = ":url"
+w = ":width"
+q = ":quality"
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/_ipx/*"
+to = "/.netlify/images?url=:url&w=:width&q=:quality"
+status = 200.0
+force = false
+
+[redirects.query]
+url = ":url"
+w = ":width"
+q = ":quality"
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/_next/image"
+to = "/.netlify/images"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
