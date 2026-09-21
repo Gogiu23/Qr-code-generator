@@ -12,10 +12,9 @@ package = "@netlify/plugin-nextjs"
 [plugins.inputs]
 
 [build]
-publish = "/Users/alessandrodominici/Proyectos/qr-generator/quode/.next"
+publish = "/Users/alessandrodominici/Proyectos/qr-generator/.next"
 publishOrigin = "ui"
 commandOrigin = "ui"
-base = "/Users/alessandrodominici/Proyectos/qr-generator/quode"
 command = "npm run build"
 
 [build.environment]

@@ -106,7 +106,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/alessandrodominici/Proyectos/qr-generator/quode",
+    "outputFileTracingRoot": "/Users/alessandrodominici/Proyectos/qr-generator",
     "enablePrerenderSourceMaps": true,
     "cacheComponents": false,
     "cacheLife": {
@@ -321,13 +321,13 @@
     "htmlLimitedBots": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight",
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
-    "repoRoot": "/Users/alessandrodominici/Proyectos/qr-generator/quode",
+    "repoRoot": "/Users/alessandrodominici/Proyectos/qr-generator",
     "turbopack": {
-      "root": "/Users/alessandrodominici/Proyectos/qr-generator/quode"
+      "root": "/Users/alessandrodominici/Proyectos/qr-generator"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "/Users/alessandrodominici/Proyectos/qr-generator/quode",
+  "appDir": "/Users/alessandrodominici/Proyectos/qr-generator",
   "relativeAppDir": "",
   "files": [
     ".next/package.json",
